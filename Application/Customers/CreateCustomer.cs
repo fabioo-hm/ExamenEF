@@ -4,6 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace Application.customers;
+namespace Application.Customers;
 
-public sealed record CreateCompany(string Name,string Email,string Phone) : IRequest<Guid>;
+public sealed record CreateCustomer(string Name, string Email, string Phone) : IRequest<Guid>;

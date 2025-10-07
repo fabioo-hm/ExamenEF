@@ -6,4 +6,4 @@ using MediatR;
 
 namespace Application.SpareParts;
 
-public sealed record CreateCity(string Code,string Description, int StockQuantity, decimal UnitPrice ) : IRequest<Guid>;
+public sealed record CreateSparePart(string Code,string Description, int StockQuantity, decimal UnitPrice ) : IRequest<Guid>;

@@ -6,4 +6,4 @@ using MediatR;
 
 namespace Application.OrderDetails;
 
-public sealed record CreateCompany(int Quantity, decimal UnitCost, decimal  Subtotal,Guid SparePartId, Guid ServiceOrderId) : IRequest<Guid>;
+public sealed record CreateOrderDetail(Guid ServiceOrderId, Guid SparePartId, int Quantity, decimal UnitCost) : IRequest<Guid>;

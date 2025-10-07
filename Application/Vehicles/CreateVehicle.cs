@@ -6,4 +6,4 @@ using MediatR;
 
 namespace Application.Vehicles;
 
-public sealed record CreateCity(string Brand, string Model,int Year, string Vin, double Mileage, Guid CustomerId) : IRequest<Guid>;
+public sealed record CreateVehicle(string Brand, string Model,int Year, string Vin, double Mileage, Guid CustomerId) : IRequest<Guid>;
