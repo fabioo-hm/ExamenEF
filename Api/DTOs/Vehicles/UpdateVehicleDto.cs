@@ -5,4 +5,4 @@ using System.Threading.Tasks;
 
 namespace Api.DTOs.Vehicles;
 
-public record UpdateVehicleDto( string? Brand, string? Model, int? Year, string? Vin, double? Mileage);
+public record UpdateVehicleDto( string? Brand, string? Model, int Year, string? Vin, double Mileage, Guid CustomerId);

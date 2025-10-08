@@ -5,4 +5,4 @@ using System.Threading.Tasks;
 
 namespace Api.DTOs.OrderDetails;
 
-public record UpdateOrderDetailDto( Guid? ServiceOrderId, Guid? SparePartId, int? Quantity, decimal? UnitCost);
+public record UpdateOrderDetailDto( Guid ServiceOrderId, Guid SparePartId, int Quantity, decimal UnitCost);
