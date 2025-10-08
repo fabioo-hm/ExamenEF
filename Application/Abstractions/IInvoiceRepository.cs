@@ -6,6 +6,7 @@ using Domain.Entities;
 using Domain.Entities.Enums;
 
 namespace Application.Abstractions;
+
 public interface IInvoiceRepository
 {
     Task<Invoice?> GetByIdAsync(Guid id, CancellationToken ct = default);
@@ -19,4 +20,7 @@ public interface IInvoiceRepository
     Task RemoveAsync(Invoice invoice, CancellationToken ct = default);
 
     Task<decimal> GetTotalRevenueAsync(DateTime startDate, DateTime endDate, CancellationToken ct = default);
+    Task<IReadOnlyList<Invoice>> GetPagedAsync(int page, int size, CancellationToken ct);
+    Task<int> CountAsync(CancellationToken ct = default);
+
 }

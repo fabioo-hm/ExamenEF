@@ -8,6 +8,7 @@ using Domain.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
+
 public class InvoiceRepository : IInvoiceRepository
 {
     private readonly AutoTallerDbContext _context;
@@ -81,4 +82,19 @@ public class InvoiceRepository : IInvoiceRepository
             .Where(i => i.IssueDate >= startDate && i.IssueDate <= endDate)
             .SumAsync(i => i.Total, ct);
     }
+    public async Task<IReadOnlyList<Invoice>> GetPagedAsync(int page, int size, CancellationToken ct)
+    {
+        return await _context.Invoices
+            .Include(i => i.ServiceOrder)
+            .OrderByDescending(i => i.IssueDate)
+            .Skip((page - 1) * size)
+            .Take(size)
+            .AsNoTracking()
+            .ToListAsync(ct);
+    }
+    public async Task<int> CountAsync(CancellationToken ct = default)
+    {
+        return await _context.Invoices.CountAsync(ct);
+    }
+
 }

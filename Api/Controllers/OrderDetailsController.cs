@@ -1,0 +1,147 @@
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Api.DTOs.OrderDetails;
+using Application.Abstractions;
+using Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Api.Controllers;
+public class OrderDetailsController : BaseApiController
+{
+    private readonly IOrderDetailRepository _repository;
+
+    public OrderDetailsController(IOrderDetailRepository repository)
+    {
+        _repository = repository;
+    }
+
+    // ✅ GET: api/orderdetails
+    [HttpGet]
+    public async Task<IActionResult> GetAll(CancellationToken ct = default)
+    {
+        var orderDetails = await _repository.GetAllAsync(ct);
+        var result = orderDetails.Select(od => new OrderDetailDto(
+            od.Id,
+            od.ServiceOrderId,
+            od.SparePartId,
+            od.Quantity,
+            od.UnitCost,
+            od.Subtotal
+        ));
+
+        return Ok(result);
+    }
+
+    // ✅ GET: api/orderdetails/{id}
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken ct = default)
+    {
+        var orderDetail = await _repository.GetByIdAsync(id, ct);
+        if (orderDetail is null)
+            return NotFound(new { Message = "Order detail not found." });
+
+        var dto = new OrderDetailDto(
+            orderDetail.Id,
+            orderDetail.ServiceOrderId,
+            orderDetail.SparePartId,
+            orderDetail.Quantity,
+            orderDetail.UnitCost,
+            orderDetail.Subtotal
+        );
+
+        return Ok(dto);
+    }
+
+    // ✅ GET: api/orderdetails/by-serviceorder/{serviceOrderId}
+    [HttpGet("by-serviceorder/{serviceOrderId:guid}")]
+    public async Task<IActionResult> GetByServiceOrder(Guid serviceOrderId, CancellationToken ct = default)
+    {
+        var details = await _repository.GetByServiceOrderIdAsync(serviceOrderId, ct);
+
+        var result = details.Select(od => new OrderDetailDto(
+            od.Id,
+            od.ServiceOrderId,
+            od.SparePartId,
+            od.Quantity,
+            od.UnitCost,
+            od.Subtotal
+        ));
+
+        return Ok(result);
+    }
+
+    // ✅ GET: api/orderdetails/total/{serviceOrderId}
+    [HttpGet("total/{serviceOrderId:guid}")]
+    public async Task<IActionResult> GetTotal(Guid serviceOrderId, CancellationToken ct = default)
+    {
+        var total = await _repository.GetTotalCostByServiceOrderIdAsync(serviceOrderId, ct);
+        return Ok(new { ServiceOrderId = serviceOrderId, Total = total });
+    }
+
+    // ✅ POST: api/orderdetails
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateOrderDetailDto dto, CancellationToken ct = default)
+    {
+        var exists = await _repository.ExistsAsync(dto.ServiceOrderId, dto.SparePartId, ct);
+        if (exists)
+            return Conflict(new { Message = "This spare part is already added to the service order." });
+
+        var orderDetail = new OrderDetail(dto.ServiceOrderId, dto.SparePartId, dto.Quantity, dto.UnitCost);
+        await _repository.AddAsync(orderDetail, ct);
+
+        var created = new OrderDetailDto(
+            orderDetail.Id,
+            orderDetail.ServiceOrderId,
+            orderDetail.SparePartId,
+            orderDetail.Quantity,
+            orderDetail.UnitCost,
+            orderDetail.Subtotal
+        );
+
+        return CreatedAtAction(nameof(GetById), new { id = orderDetail.Id }, created);
+    }
+
+    // ✅ PUT: api/orderdetails/{id}
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateOrderDetailDto dto, CancellationToken ct = default)
+    {
+        var existing = await _repository.GetByIdAsync(id, ct);
+        if (existing is null)
+            return NotFound(new { Message = "Order detail not found." });
+
+        // Actualizar mediante reflexión si los setters son privados
+        existing.GetType().GetProperty("ServiceOrderId")?.SetValue(existing, dto.ServiceOrderId);
+        existing.GetType().GetProperty("SparePartId")?.SetValue(existing, dto.SparePartId);
+        existing.GetType().GetProperty("Quantity")?.SetValue(existing, dto.Quantity);
+        existing.GetType().GetProperty("UnitCost")?.SetValue(existing, dto.UnitCost);
+
+        await _repository.UpdateAsync(existing, ct);
+
+        var updated = new OrderDetailDto(
+            existing.Id,
+            existing.ServiceOrderId,
+            existing.SparePartId,
+            existing.Quantity,
+            existing.UnitCost,
+            existing.Subtotal
+        );
+
+        return Ok(updated);
+    }
+
+    // ✅ DELETE: api/orderdetails/{id}
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken ct = default)
+    {
+        var existing = await _repository.GetByIdAsync(id, ct);
+        if (existing is null)
+            return NotFound(new { Message = "Order detail not found." });
+
+        await _repository.RemoveAsync(existing, ct);
+        return NoContent();
+    }
+}
