@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Infrastructure.Persistence.Repositories;
 
 namespace Api.Extensions;
 
@@ -50,8 +51,14 @@ public static class ApplicationServiceExtensions
     {
         services.AddScoped<IPasswordHasher<UserMember>, PasswordHasher<UserMember>>();
         services.AddScoped<IUserService, UserService>();
-
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+        services.AddScoped<ISparePartRepository, SparePartRepository>();
+        services.AddScoped<IVehicleRepository, VehicleRepository>();
+        services.AddScoped<IServiceOrderRepository, ServiceOrderRepository>();
+        services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
         services.AddValidatorsFromAssembly(typeof(Program).Assembly);
         services.AddAutoMapper(typeof(Program).Assembly);
@@ -87,37 +94,6 @@ public static class ApplicationServiceExtensions
                     QueueProcessingOrder = QueueProcessingOrder.OldestFirst
                 });
             });
-            // Fixed Window Limiter
-            // options.AddFixedWindowLimiter("fixed", opt =>
-            // {
-            //     opt.Window = TimeSpan.FromSeconds(10);
-            //     opt.PermitLimit = 5;
-            //     opt.QueueLimit = 0;
-            //     opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-            // });
-
-            // Sliding Window Limiter
-            // options.AddSlidingWindowLimiter("sliding", opt =>
-            // {
-            //     opt.Window = TimeSpan.FromSeconds(10);
-            //     opt.SegmentsPerWindow = 3;
-            //     opt.PermitLimit = 6;
-            //     opt.QueueLimit = 0;
-            //     opt.QueueProcessingOrder = QueueProcessingOrder.NewestFirst;
-            //     // Aquí se personaliza la respuesta cuando se excede el límite
-            // });
-
-            // Token Bucket Limiter
-            // options.AddTokenBucketLimiter("token", opt =>
-            // {
-            //     opt.TokenLimit = 20;
-            //     opt.TokensPerPeriod = 4;
-            //     opt.ReplenishmentPeriod = TimeSpan.FromSeconds(10);
-            //     opt.QueueLimit = 2;
-            //     opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-            //     opt.AutoReplenishment = true;
-            // });
-
         });
 
         return services;

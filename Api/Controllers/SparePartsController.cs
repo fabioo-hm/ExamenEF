@@ -37,8 +37,8 @@ public class SparePartsController : BaseApiController
             return CreatedAtAction(nameof(GetById), new { id }, id);
         }
 
-        // ✅ GET: api/spareparts
-        [HttpGet]
+        // ✅ GET: api/spareparts/all
+        [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<SparePartDto>>> GetAll(CancellationToken ct)
         {
             var parts = await _repo.GetAllAsync(ct);

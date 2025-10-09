@@ -1,7 +1,10 @@
 
 using Api.Extensions;
 using Api.Helpers.Errors;
+using Application.Abstractions;
+using Domain.Entities;
 using Infrastructure.Persistence;
+using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +27,12 @@ builder.Services.AddDbContext<AutoTallerDbContext>(options =>
 
 // builder.Services.AddDbContext<AppDbContext>(opt =>
 //     opt.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+builder.Services.AddScoped<IServiceOrderRepository, ServiceOrderRepository>();
+builder.Services.AddScoped<ISparePartRepository, SparePartRepository>();
+builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Api.DTOs.Invoices;
 using Application.Abstractions;
+using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +15,16 @@ namespace Api.Controllers;
 public class InvoicesController : BaseApiController
 {
     private readonly IInvoiceRepository _repository;
+    private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitofwork;
 
-    public InvoicesController(IInvoiceRepository repository)
+
+    public InvoicesController(IInvoiceRepository repository,IMapper mapper, IUnitOfWork unitofwork)
     {
         _repository = repository;
+        _unitofwork = unitofwork;
+        _mapper = mapper;
+
     }
 
     // ✅ GET: api/invoices?page=1&size=10
@@ -69,7 +76,13 @@ public class InvoicesController : BaseApiController
 
         return Ok(dto);
     }
-
+    [HttpGet("all")]
+    public async Task<ActionResult<IEnumerable<InvoiceDto>>> GetAll(CancellationToken ct)
+    {
+        var invoice = await _unitofwork.Invoices.GetAllAsync(ct);
+        var dto = _mapper.Map<IEnumerable<InvoiceDto>>(invoice);
+        return Ok(dto);
+    }
     // ✅ POST: api/invoices
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateInvoiceDto dto, CancellationToken ct = default)

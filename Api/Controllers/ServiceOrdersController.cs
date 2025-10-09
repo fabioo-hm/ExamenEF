@@ -38,8 +38,8 @@ public class ServiceOrdersController : BaseApiController
         return CreatedAtAction(nameof(GetById), new { id }, id);
     }
 
-    // ✅ GET: api/serviceorders
-    [HttpGet]
+    // ✅ GET: api/serviceorders/all
+    [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<ServiceOrderDto>>> GetAll(CancellationToken ct)
     {
         var orders = await _repo.GetAllAsync(ct);

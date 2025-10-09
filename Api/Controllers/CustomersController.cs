@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Api.DTOs.Customers;
 using Application.Abstractions;
+using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,13 +13,16 @@ namespace Api.Controllers;
 
 public class CustomersController : BaseApiController
 {
-    private readonly ICustomerRepository _repository;
+    private readonly ICustomerRepository _repository;    
+    private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitofwork;
 
-    public CustomersController(ICustomerRepository repository)
+    public CustomersController(ICustomerRepository repository,IMapper mapper, IUnitOfWork unitofwork)
     {
+        _mapper = mapper;
+        _unitofwork = unitofwork;
         _repository = repository;
     }
-
     // ✅ GET: api/customers?page=1&size=10&search=John
     [HttpGet]
     public async Task<IActionResult> GetAll(
@@ -44,6 +48,13 @@ public class CustomersController : BaseApiController
             Size = size,
             Data = result
         });
+    }
+    [HttpGet("all")]
+    public async Task<ActionResult<IEnumerable<CustomerDto>>> GetAll(CancellationToken ct)
+    {
+        var customer = await _unitofwork.Customers.GetAllAsync(ct);
+        var dto = _mapper.Map<IEnumerable<CustomerDto>>(customer);
+        return Ok(dto);
     }
 
     // ✅ GET: api/customers/{id}

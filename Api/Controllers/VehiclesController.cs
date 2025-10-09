@@ -24,9 +24,9 @@ public class VehiclesController : BaseApiController
     }
 
     // ============================================================
-    // GET: api/vehicles
+    // GET: api/vehicles/all
     // ============================================================
-    [HttpGet]
+    [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<VehicleDto>>> GetAll(CancellationToken ct)
     {
         var vehicles = await _vehicleRepository.GetAllAsync(ct);

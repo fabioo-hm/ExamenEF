@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Api.DTOs.OrderDetails;
 using Application.Abstractions;
+using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,27 +14,23 @@ namespace Api.Controllers;
 public class OrderDetailsController : BaseApiController
 {
     private readonly IOrderDetailRepository _repository;
+    private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitofwork;
 
-    public OrderDetailsController(IOrderDetailRepository repository)
+    public OrderDetailsController(IOrderDetailRepository repository,IMapper mapper, IUnitOfWork unitofwork)
     {
+        _mapper = mapper;
+        _unitofwork = unitofwork;
         _repository = repository;
     }
 
-    // ✅ GET: api/orderdetails
-    [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken ct = default)
+    // ✅ GET: api/orderdetails/all
+    [HttpGet("all")]
+    public async Task<ActionResult<IEnumerable<OrderDetailDto>>> GetAll(CancellationToken ct)
     {
-        var orderDetails = await _repository.GetAllAsync(ct);
-        var result = orderDetails.Select(od => new OrderDetailDto(
-            od.Id,
-            od.ServiceOrderId,
-            od.SparePartId,
-            od.Quantity,
-            od.UnitCost,
-            od.Subtotal
-        ));
-
-        return Ok(result);
+        var orderDetail = await _unitofwork.OrderDetails.GetAllAsync(ct);
+        var dto = _mapper.Map<IEnumerable<OrderDetailDto>>(orderDetail);
+        return Ok(dto);
     }
 
     // ✅ GET: api/orderdetails/{id}
