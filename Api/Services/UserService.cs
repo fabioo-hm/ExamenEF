@@ -34,141 +34,40 @@ public class UserService : IUserService
         {
             Username = registerDto.Username ?? throw new ArgumentNullException(nameof(registerDto.Username)),
             Email = registerDto.Email ?? throw new ArgumentNullException(nameof(registerDto.Email)),
-            Password = registerDto.Password ?? throw new ArgumentNullException(nameof(registerDto.Password))
+            Password = _passwordHasher.HashPassword(new UserMember(), registerDto.Password ?? throw new ArgumentNullException(nameof(registerDto.Password)))
         };
 
-        usuario.Password = _passwordHasher.HashPassword(usuario, registerDto.Password!);
-
         var usuarioExiste = _unitOfWork.UserMembers
-                                    .Find(u => u.Username.ToLower() == registerDto.Username.ToLower())
-                                    .FirstOrDefault();
+            .Find(u => u.Username.ToLower() == registerDto.Username.ToLower())
+            .FirstOrDefault();
 
-        if (usuarioExiste == null)
+        if (usuarioExiste != null)
+            return $"El usuario {registerDto.Username} ya se encuentra registrado.";
+
+        var defaultRoleName = UserAuthorization.rol_default.ToString();
+
+        var rolPredeterminado = _unitOfWork.Roles
+            .Find(u => EF.Functions.ILike(u.Name, defaultRoleName))
+            .FirstOrDefault();
+
+        if (rolPredeterminado == null)
+            return $"No se encontró el rol predeterminado '{defaultRoleName}' en la base de datos.";
+
+        try
         {
-            var defaultRoleName = UserAuthorization.rol_default.ToString();
-            var rolPredeterminado = _unitOfWork.Roles
-                                    .Find(u => EF.Functions.ILike(u.Name, defaultRoleName))
-                                    .FirstOrDefault();
-            if (rolPredeterminado == null)
-            {
-                try
-                {
-                    // Intenta crear el rol por defecto si no existe
-                    var nuevoRol = new Rol
-                    {
-                        Name = defaultRoleName,
-                        Description = "Default role"
-                    };
-                    await _unitOfWork.Roles.AddAsync(nuevoRol);
-                    await _unitOfWork.SaveChanges();
-                    rolPredeterminado = nuevoRol;
-                }
-                catch
-                {
-                    // Si otro proceso lo creó en paralelo, reintenta obtenerlo
-                    rolPredeterminado = _unitOfWork.Roles
-                                        .Find(u => EF.Functions.ILike(u.Name, defaultRoleName))
-                                        .FirstOrDefault();
-                    if (rolPredeterminado == null)
-                    {
-                        return $"No se encontró ni pudo crearse el rol predeterminado '{defaultRoleName}'.";
-                    }
-                }
-            }
-            try
-            {
-                usuario.Rols.Add(rolPredeterminado);
-                await _unitOfWork.UserMembers.AddAsync(usuario);
-                await _unitOfWork.SaveChanges();
+            // ✅ Asigna el rol por su Id, sin insertar otro nuevo
+            usuario.UserMemberRols.Add(new UserMemberRol { RolId = rolPredeterminado.Id });
 
-                return $"El usuario  {registerDto.Username} ha sido registrado exitosamente";
-            }
-            catch (Exception ex)
-            {
-                var message = ex.Message;
-                return $"Error: {message}";
-            }
+            await _unitOfWork.UserMembers.AddAsync(usuario);
+            await _unitOfWork.SaveChanges();
+
+            return $"El usuario {registerDto.Username} ha sido registrado exitosamente.";
         }
-        else
+        catch (Exception ex)
         {
-            return $"El usuario con {registerDto.Username} ya se encuentra registrado.";
+            return $"Error al registrar usuario: {ex.Message}";
         }
     }
-
-    // public async Task<DataUserDto> GetTokenAsync(LoginDto model)
-    // {
-    //     DataUserDto datosUsuarioDto = new DataUserDto();
-    //     if (string.IsNullOrEmpty(model.Username))
-    //     {
-    //         datosUsuarioDto.IsAuthenticated = false;
-    //         datosUsuarioDto.Message = "El nombre de usuario no puede ser nulo o vacío.";
-    //         return datosUsuarioDto;
-    //     }
-    //     var usuario = await _unitOfWork.UserMembers
-    //                 .GetByUserNameAsync(model.Username);
-
-    //     if (usuario == null)
-    //     {
-    //         datosUsuarioDto.IsAuthenticated = false;
-    //         datosUsuarioDto.Message = $"No existe ningún usuario con el username {model.Username}.";
-    //         return datosUsuarioDto;
-    //     }
-
-    //     if (string.IsNullOrEmpty(model.Password))
-    //     {
-    //         datosUsuarioDto.IsAuthenticated = false;
-    //         datosUsuarioDto.Message = $"La contraseña no puede ser nula o vacía para el usuario {usuario.Username}.";
-    //         return datosUsuarioDto;
-    //     }
-
-    //     var resultado = _passwordHasher.VerifyHashedPassword(usuario, usuario.Password, model.Password);
-
-    //     if (resultado == PasswordVerificationResult.Success)
-    //     {
-    //         datosUsuarioDto.IsAuthenticated = true;
-    //         JwtSecurityToken jwtSecurityToken = CreateJwtToken(usuario);
-    //         datosUsuarioDto.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-    //         datosUsuarioDto.Email = usuario.Email;
-    //         datosUsuarioDto.UserName = usuario.Username;
-    //         datosUsuarioDto.Roles = usuario.Rols
-    //                                         .Select(u => u.Name)
-    //                                         .ToList();
-
-    //         if (usuario.RefreshTokens.Any(a => a.IsActive))
-    //         {
-    //             var activeRefreshToken = usuario.RefreshTokens.Where(a => a.IsActive == true).FirstOrDefault();
-    //             if (activeRefreshToken != null)
-    //             {
-    //                 datosUsuarioDto.RefreshToken = activeRefreshToken.Token;
-    //                 datosUsuarioDto.RefreshTokenExpiration = activeRefreshToken.Expires;
-    //             }
-    //             else
-    //             {
-    //                 // If no active refresh token is found, create a new one
-    //                 var refreshToken = CreateRefreshToken();
-    //                 datosUsuarioDto.RefreshToken = refreshToken.Token;
-    //                 datosUsuarioDto.RefreshTokenExpiration = refreshToken.Expires;
-    //                 usuario.RefreshTokens.Add(refreshToken);
-    //                 await _unitOfWork.UserMembers.UpdateAsync(usuario);
-    //                 await _unitOfWork.SaveChangesAsync();
-    //             }
-    //         }
-    //         else
-    //         {
-    //             var refreshToken = CreateRefreshToken();
-    //             datosUsuarioDto.RefreshToken = refreshToken.Token;
-    //             datosUsuarioDto.RefreshTokenExpiration = refreshToken.Expires;
-    //             usuario.RefreshTokens.Add(refreshToken);
-    //             await _unitOfWork.UserMembers.UpdateAsync(usuario);
-    //             await _unitOfWork.SaveChangesAsync();
-    //         }
-
-    //         return datosUsuarioDto;
-    //     }
-    //     datosUsuarioDto.IsAuthenticated = false;
-    //     datosUsuarioDto.Message = $"Credenciales incorrectas para el usuario {usuario.Username}.";
-    //     return datosUsuarioDto;
-    // }
     public async Task<DataUserDto> GetTokenAsync(LoginDto model, CancellationToken ct = default)
     {
         var dto = new DataUserDto { IsAuthenticated = false };
@@ -222,7 +121,6 @@ public class UserService : IUserService
             var refresh = CreateRefreshToken();
             usuario.RefreshTokens.Add(refresh);
 
-            await _unitOfWork.UserMembers.UpdateAsync(usuario, ct);
             await _unitOfWork.SaveChanges(ct);
         }, ct);
 

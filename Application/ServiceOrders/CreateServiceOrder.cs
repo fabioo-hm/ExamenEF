@@ -7,4 +7,4 @@ using MediatR;
 
 namespace Application.ServiceOrders;
 
-public sealed record CreateServiceOrder( Guid VehicleId, ServiceType ServiceType, string MechanicAssigned, DateTime EntryDate, DateTime EstimatedDeliveryDate) : IRequest<Guid>;
+public sealed record CreateServiceOrder( Guid VehicleId, ServiceType ServiceType, int UserMemberId, DateTime EntryDate, DateTime EstimatedDeliveryDate, OrderStatus OrderStatus) : IRequest<Guid>;

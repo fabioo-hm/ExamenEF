@@ -13,5 +13,7 @@ public class UserMember
     public string Password { get; set; } = string.Empty;
     public ICollection<Rol> Rols { get; set; } = new HashSet<Rol>();
     public ICollection<UserMemberRol> UserMemberRols { get; set; } = new HashSet<UserMemberRol>();
+    public ICollection<ServiceOrder> ServiceOrders { get; set; } = new HashSet<ServiceOrder>();
+
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new HashSet<RefreshToken>();
 }

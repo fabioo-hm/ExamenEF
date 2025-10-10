@@ -76,7 +76,11 @@ public class VehiclesController : BaseApiController
     [HttpPost]
     public async Task<ActionResult<Guid>> Create([FromBody] CreateVehicleDto dto, CancellationToken ct)
     {
+        if (await _vehicleRepository.ExistsVinAsync(dto.Vin, ct))
+            throw new InvalidOperationException($"A vehicle with VIN '{dto.Vin}' already exists.");
+
         var command = new CreateVehicle(dto.Brand, dto.Model, dto.Year, dto.Vin, dto.Mileage, dto.CustomerId);
+        
         var id = await _mediator.Send(command, ct);
         return CreatedAtAction(nameof(GetById), new { id }, id);
     }

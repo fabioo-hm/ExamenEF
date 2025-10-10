@@ -5,4 +5,4 @@ using System.Threading.Tasks;
 using Domain.Entities.Enums;
 
 namespace Api.DTOs.ServiceOrders;
-public record UpdateServiceOrderDto( Guid VehicleId, ServiceType ServiceType, string? MechanicAssigned, DateTime EntryDate, DateTime EstimatedDeliveryDate);
+public record UpdateServiceOrderDto( Guid VehicleId, ServiceType ServiceType, int UserMemberId, DateTime EntryDate, DateTime EstimatedDeliveryDate, OrderStatus OrderStatus);

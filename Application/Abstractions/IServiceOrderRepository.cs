@@ -11,6 +11,8 @@ public interface IServiceOrderRepository
     Task<ServiceOrder?> GetByIdAsync(Guid id, CancellationToken ct = default);
     Task<IReadOnlyList<ServiceOrder>> GetByVehicleIdAsync(Guid vehicleId, CancellationToken ct = default);
     Task<IReadOnlyList<ServiceOrder>> GetByServiceTypeAsync(ServiceType serviceType, CancellationToken ct = default);
+    Task<IReadOnlyList<ServiceOrder>> GetByUserMemberIdAsync(int userMemberId, CancellationToken ct = default);
+    Task<IReadOnlyList<ServiceOrder>> GetByStatusAsync(OrderStatus status, CancellationToken ct = default);
     Task<IReadOnlyList<ServiceOrder>> GetAllAsync(CancellationToken ct = default);
     Task<IReadOnlyList<ServiceOrder>> GetPagedAsync(int page, int size, string? search, CancellationToken ct = default);
     Task<int> CountAsync(string? search, CancellationToken ct = default);

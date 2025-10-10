@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Infrastructure.Persistence.Repositories;
+using Application.Vehicles;
 
 namespace Api.Extensions;
 
@@ -60,6 +61,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateVehicle).Assembly));
         services.AddValidatorsFromAssembly(typeof(Program).Assembly);
         services.AddAutoMapper(typeof(Program).Assembly);
         services.AddAutoMapper(typeof(CustomerProfile).Assembly);

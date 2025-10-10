@@ -11,7 +11,7 @@ public sealed class CreateServiceOrderHandler(IServiceOrderRepository repo) : IR
 {
     public async Task<Guid> Handle(CreateServiceOrder req, CancellationToken ct)
     {
-        var serviceOrder = new ServiceOrder(req.VehicleId, req.ServiceType, req.MechanicAssigned, req.EntryDate, req.EstimatedDeliveryDate);
+        var serviceOrder = new ServiceOrder(req.VehicleId, req.ServiceType, req.UserMemberId, req.EntryDate, req.EstimatedDeliveryDate, req.OrderStatus);
         await repo.AddAsync(serviceOrder, ct);
         return serviceOrder.Id;
     }

@@ -26,12 +26,13 @@ public class ServiceOrdersController : BaseApiController
     [HttpPost]
     public async Task<ActionResult<Guid>> Create([FromBody] CreateServiceOrderDto dto, CancellationToken ct)
     {
-        var command = new CreateServiceOrder(
+        var command = new CreateServiceOrderDto(
             dto.VehicleId,
             dto.ServiceType,
-            dto.MechanicAssigned,
+            dto.UserMemberId,
+            dto.EstimatedDeliveryDate,
             dto.EntryDate,
-            dto.EstimatedDeliveryDate
+            dto.OrderStatus
         );
 
         var id = await _mediator.Send(command, ct);
@@ -47,9 +48,10 @@ public class ServiceOrdersController : BaseApiController
             o.Id,
             o.VehicleId,
             o.ServiceType,
-            o.MechanicAssigned ?? string.Empty,
+            o.UserMemberId,
+            o.EstimatedDeliveryDate,
             o.EntryDate,
-            o.EstimatedDeliveryDate
+            o.OrderStatus
         ));
 
         return Ok(result);
@@ -67,9 +69,10 @@ public class ServiceOrdersController : BaseApiController
             order.Id,
             order.VehicleId,
             order.ServiceType,
-            order.MechanicAssigned ?? string.Empty,
+            order.UserMemberId,
             order.EntryDate,
-            order.EstimatedDeliveryDate
+            order.EstimatedDeliveryDate,
+            order.OrderStatus
         );
 
         return Ok(dto);
@@ -87,9 +90,10 @@ public class ServiceOrdersController : BaseApiController
         var updated = new ServiceOrder(
             dto.VehicleId,
             dto.ServiceType,
-            dto.MechanicAssigned ?? existing.MechanicAssigned ?? string.Empty,
+            dto.UserMemberId,
             dto.EntryDate,
-            dto.EstimatedDeliveryDate
+            dto.EstimatedDeliveryDate,
+            dto.OrderStatus
         );
 
         // Reasignamos el ID existente

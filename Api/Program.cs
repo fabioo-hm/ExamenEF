@@ -1,6 +1,8 @@
 
 using Api.Extensions;
+using Api.Helpers;
 using Api.Helpers.Errors;
+using Api.Services;
 using Application.Abstractions;
 using Domain.Entities;
 using Infrastructure.Persistence;
@@ -18,6 +20,7 @@ builder.Services.ConfigureCors();
 builder.Services.AddCustomRateLimiter();
 builder.Services.AddJwt(builder.Configuration);
 builder.Services.AddApplicationServices();
+builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
 builder.Services.AddDbContext<AutoTallerDbContext>(options =>
 {
     string connectionString = builder.Configuration.GetConnectionString("Postgres")!;
@@ -33,6 +36,7 @@ builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 builder.Services.AddScoped<IServiceOrderRepository, ServiceOrderRepository>();
 builder.Services.AddScoped<ISparePartRepository, SparePartRepository>();
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();

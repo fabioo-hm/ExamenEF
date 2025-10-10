@@ -18,17 +18,19 @@ public class ServiceOrderProfile : Profile
             .ConstructUsing(src => new ServiceOrder(
                 src.VehicleId,
                 src.ServiceType,
-                src.MechanicAssigned!,
+                src.UserMemberId,
                 src.EntryDate,
-                src.EstimatedDeliveryDate
+                src.EstimatedDeliveryDate,
+                src.OrderStatus
             ));
         CreateMap<UpdateServiceOrderDto, ServiceOrder>()
             .ConstructUsing(src => new ServiceOrder(
                 src.VehicleId,
                 src.ServiceType,
-                src.MechanicAssigned!,
+                src.UserMemberId,
                 src.EntryDate,
-                src.EstimatedDeliveryDate
+                src.EstimatedDeliveryDate,
+                src.OrderStatus
             ));
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Application.Abstractions;
 using Domain.Entities;
@@ -8,6 +9,7 @@ using Domain.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
+
 public class ServiceOrderRepository : IServiceOrderRepository
 {
     private readonly AutoTallerDbContext _context;
@@ -22,6 +24,7 @@ public class ServiceOrderRepository : IServiceOrderRepository
         return await _context.ServiceOrders
             .Include(o => o.Vehicle)
                 .ThenInclude(v => v.Customer)
+            .Include(o => o.UserMember)
             .Include(o => o.OrderDetails)
                 .ThenInclude(d => d.SparePart)
             .Include(o => o.Invoice)
@@ -34,6 +37,7 @@ public class ServiceOrderRepository : IServiceOrderRepository
         return await _context.ServiceOrders
             .Where(o => o.VehicleId == vehicleId)
             .Include(o => o.Vehicle)
+            .Include(o => o.UserMember)
             .Include(o => o.Invoice)
             .AsNoTracking()
             .ToListAsync(ct);
@@ -44,7 +48,29 @@ public class ServiceOrderRepository : IServiceOrderRepository
         return await _context.ServiceOrders
             .Where(o => o.ServiceType == serviceType)
             .Include(o => o.Vehicle)
+            .Include(o => o.UserMember)
             .Include(o => o.Invoice)
+            .AsNoTracking()
+            .ToListAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<ServiceOrder>> GetByUserMemberIdAsync(int userMemberId, CancellationToken ct = default)
+    {
+        return await _context.ServiceOrders
+            .Where(o => o.UserMemberId == userMemberId)
+            .Include(o => o.Vehicle)
+            .Include(o => o.Invoice)
+            .Include(o => o.UserMember)
+            .AsNoTracking()
+            .ToListAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<ServiceOrder>> GetByStatusAsync(OrderStatus status, CancellationToken ct = default)
+    {
+        return await _context.ServiceOrders
+            .Where(o => o.OrderStatus == status)
+            .Include(o => o.Vehicle)
+            .Include(o => o.UserMember)
             .AsNoTracking()
             .ToListAsync(ct);
     }
@@ -53,6 +79,8 @@ public class ServiceOrderRepository : IServiceOrderRepository
     {
         return await _context.ServiceOrders
             .Include(o => o.Vehicle)
+                .ThenInclude(v => v.Customer)
+            .Include(o => o.UserMember)
             .Include(o => o.Invoice)
             .AsNoTracking()
             .ToListAsync(ct);
@@ -63,14 +91,14 @@ public class ServiceOrderRepository : IServiceOrderRepository
         var query = _context.ServiceOrders
             .Include(o => o.Vehicle)
                 .ThenInclude(v => v.Customer)
+            .Include(o => o.UserMember)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(search))
         {
             query = query.Where(o =>
-                o.MechanicAssigned!.Contains(search) ||
-                o.Vehicle!.Brand!.Contains(search) ||
-                o.Vehicle.Model!.Contains(search));
+                o.Vehicle!.Brand.Contains(search) ||
+                o.Vehicle.Model.Contains(search));
         }
 
         return await query
@@ -85,14 +113,14 @@ public class ServiceOrderRepository : IServiceOrderRepository
     {
         var query = _context.ServiceOrders
             .Include(o => o.Vehicle)
+            .Include(o => o.UserMember)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(search))
         {
             query = query.Where(o =>
-                o.MechanicAssigned!.Contains(search) ||
-                o.Vehicle!.Brand!.Contains(search) ||
-                o.Vehicle.Model!.Contains(search));
+                o.Vehicle!.Brand.Contains(search) ||
+                o.Vehicle.Model.Contains(search));
         }
 
         return await query.CountAsync(ct);

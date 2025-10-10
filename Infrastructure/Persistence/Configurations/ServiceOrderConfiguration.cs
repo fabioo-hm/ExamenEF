@@ -16,9 +16,17 @@ public sealed class ServiceOrderConfiguration : IEntityTypeConfiguration<Service
         builder.ToTable("service_orders");
         builder.HasKey(s => s.Id);
 
-        builder.Property(s => s.MechanicAssigned)
-            .IsRequired()
-            .HasColumnType("varchar(100)");
+        builder.Property(os => os.OrderStatus)
+                .IsRequired()
+            .HasConversion(
+                v => v.ToString(),                             // Enum -> string
+                v => (OrderStatus)Enum.Parse(typeof(OrderStatus), v)) // string -> Enum
+            .HasColumnType("varchar(50)");
+
+        builder.HasOne(os => os.UserMember)
+            .WithMany(u => u.ServiceOrders) 
+            .HasForeignKey(os => os.UserMemberId)
+            .IsRequired();
 
         builder.Property(s => s.EntryDate)
             .IsRequired()
