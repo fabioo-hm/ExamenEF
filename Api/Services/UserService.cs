@@ -30,12 +30,8 @@ public class UserService : IUserService
     }
     public async Task<string> RegisterAsync(RegisterDto registerDto)
     {
-        var usuario = new UserMember
-        {
-            Username = registerDto.Username ?? throw new ArgumentNullException(nameof(registerDto.Username)),
-            Email = registerDto.Email ?? throw new ArgumentNullException(nameof(registerDto.Email)),
-            Password = _passwordHasher.HashPassword(new UserMember(), registerDto.Password ?? throw new ArgumentNullException(nameof(registerDto.Password)))
-        };
+        if (registerDto == null)
+            throw new ArgumentNullException(nameof(registerDto));
 
         var usuarioExiste = _unitOfWork.UserMembers
             .Find(u => u.Username.ToLower() == registerDto.Username.ToLower())
@@ -44,24 +40,34 @@ public class UserService : IUserService
         if (usuarioExiste != null)
             return $"El usuario {registerDto.Username} ya se encuentra registrado.";
 
-        var defaultRoleName = UserAuthorization.rol_default.ToString();
+        var usuario = new UserMember
+        {
+            Username = registerDto.Username,
+            Email = registerDto.Email,
+            Password = _passwordHasher.HashPassword(new UserMember(), registerDto.Password)
+        };
 
-        var rolPredeterminado = _unitOfWork.Roles
-            .Find(u => EF.Functions.ILike(u.Name, defaultRoleName))
+        // Si el rol viene vacío, usar el predeterminado
+        var roleName = string.IsNullOrWhiteSpace(registerDto.Role)
+            ? UserAuthorization.rol_default.ToString()
+            : registerDto.Role.Trim();
+
+        // Buscar el rol en BD (sin depender de mayúsculas/minúsculas)
+        var rol = _unitOfWork.Roles
+            .Find(r => r.Name.ToLower() == roleName.ToLower())
             .FirstOrDefault();
 
-        if (rolPredeterminado == null)
-            return $"No se encontró el rol predeterminado '{defaultRoleName}' en la base de datos.";
+        if (rol == null)
+            return $"No se encontró el rol '{roleName}' en la base de datos.";
 
         try
         {
-            // ✅ Asigna el rol por su Id, sin insertar otro nuevo
-            usuario.UserMemberRols.Add(new UserMemberRol { RolId = rolPredeterminado.Id });
+            usuario.UserMemberRols.Add(new UserMemberRol { RolId = rol.Id });
 
             await _unitOfWork.UserMembers.AddAsync(usuario);
             await _unitOfWork.SaveChanges();
 
-            return $"El usuario {registerDto.Username} ha sido registrado exitosamente.";
+            return $"✅ Usuario {registerDto.Username} registrado con el rol '{roleName}'.";
         }
         catch (Exception ex)
         {
