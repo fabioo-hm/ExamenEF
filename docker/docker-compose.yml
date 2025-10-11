@@ -22,12 +22,23 @@ services:
     environment:
       ASPNETCORE_HTTP_PORTS: "8080"    # o usa ASPNETCORE_URLS si prefieres
       ASPNETCORE_ENVIRONMENT: "Development"
-      ConnectionStrings__Default: "Host=db;Port=5432;Database=autotallermanager;Username=postgres;Password=postgres"  # Cambié la base de datos a "trabajoef"
+      ConnectionStrings__Postgres: "Host=db;Port=5432;Database=autotallermanager;Username=postgres;Password=postgres"  # Cambié la base de datos a "trabajoef"
     ports:
       - "8081:8080"
     depends_on:
       db:
         condition: service_healthy
+      
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: adminexample@admin.com
+      PGADMIN_DEFAULT_PASSWORD: Supersegura123!
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
 
 volumes:
   autotallermanager_data:  # Cambié el nombre del volumen a "trabajoef_data"

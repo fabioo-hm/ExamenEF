@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Application.Abstractions.Auth;
 using Domain.Entities.Auth;
@@ -36,15 +37,44 @@ public class UserMemberRolService : IUserMemberRolService
                 umr.RolId == roleId);
     }
 
+    public async Task AddAsync(UserMemberRol entity)
+    {
+        await _context.UserMemberRols.AddAsync(entity);
+    }
+
+    public async Task AddRangeAsync(IEnumerable<UserMemberRol> entities)
+    {
+        await _context.UserMemberRols.AddRangeAsync(entities);
+    }
+
     public void Update(UserMemberRol entity)
     {
         _context.UserMemberRols.Update(entity);
-        _context.SaveChanges();
     }
 
     public void Remove(UserMemberRol entity)
     {
         _context.UserMemberRols.Remove(entity);
-        _context.SaveChanges();
+    }
+
+    public void RemoveRange(IEnumerable<UserMemberRol> entities)
+    {
+        _context.UserMemberRols.RemoveRange(entities);
+    }
+
+    public async Task<List<UserMemberRol>> FindAsync(Expression<Func<UserMemberRol, bool>> predicate)
+    {
+        return await _context.UserMemberRols
+            .Include(umr => umr.Rol)
+            .Where(predicate)
+            .ToListAsync();
+    }
+
+    public async Task<List<UserMemberRol>> GetByUserIdAsync(int userMemberId)
+    {
+        return await _context.UserMemberRols
+            .Include(umr => umr.Rol)
+            .Where(umr => umr.UserMemberId == userMemberId)
+            .ToListAsync();
     }
 }

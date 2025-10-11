@@ -106,7 +106,9 @@ public class UserService : IUserService
         }
 
         // 4) Preparar colecciones de forma segura
-        var roles = usuario.Rols?.Select(r => r.Name).ToList() ?? new List<string>();
+        var roles = usuario.UserMemberRols
+            .Select(ur => ur.Rol.Name)
+            .ToList();
         usuario.RefreshTokens ??= new List<RefreshToken>();
 
         // 5) Transacción: rotación de refresh tokens + persistencia
@@ -186,76 +188,64 @@ public class UserService : IUserService
     }
     public async Task<string> AddRoleAsync(AddRoleDto model)
     {
-
         if (string.IsNullOrEmpty(model.Username))
-        {
             return "Username cannot be null or empty.";
-        }
-        var user = await _unitOfWork.UserMembers
-                    .GetByUserNameAsync(model.Username);
+
+        var user = await _unitOfWork.UserMembers.GetByUserNameAsync(model.Username);
         if (user == null)
-        {
-            return $"User {model.Username} does not exists.";
-        }
+            return $"User {model.Username} does not exist.";
 
         if (string.IsNullOrEmpty(model.Password))
-        {
             return $"Password cannot be null or empty.";
-        }
 
         var result = _passwordHasher.VerifyHashedPassword(user, user.Password, model.Password);
+        if (result != PasswordVerificationResult.Success)
+            return "Invalid credentials.";
 
-        if (result == PasswordVerificationResult.Success)
+        if (string.IsNullOrWhiteSpace(model.Role))
+            return "Role name cannot be null or empty.";
+
+        var roleName = model.Role.Trim();
+
+        var existingRole = _unitOfWork.Roles
+            .Find(u => EF.Functions.ILike(u.Name, roleName))
+            .FirstOrDefault();
+
+        if (existingRole == null)
         {
-            if (string.IsNullOrWhiteSpace(model.Role))
+            var newRole = new Rol
             {
-                return "Role name cannot be null or empty.";
-            }
-
-            var roleName = model.Role.Trim();
-
-            var rolExists = _unitOfWork.Roles
-                                        .Find(u => EF.Functions.ILike(u.Name, roleName))
-                                        .FirstOrDefault();
-
-            if (rolExists == null)
-            {
-                try
-                {
-                    var nuevoRol = new Rol
-                    {
-                        Name = roleName,
-                        Description = $"{roleName} role"
-                    };
-                    await _unitOfWork.Roles.AddAsync(nuevoRol);
-                    await _unitOfWork.SaveChanges();
-                    rolExists = nuevoRol;
-                }
-                catch
-                {
-                    // Race condition: role created concurrently, re-fetch
-                    rolExists = _unitOfWork.Roles
-                                .Find(u => EF.Functions.ILike(u.Name, roleName))
-                                .FirstOrDefault();
-                    if (rolExists == null)
-                    {
-                        return $"No se encontró ni pudo crearse el rol '{roleName}'.";
-                    }
-                }
-            }
-
-            var userHasRole = user.Rols.Any(r => r.Name.Equals(roleName, StringComparison.OrdinalIgnoreCase) || r.Id == rolExists.Id);
-            if (!userHasRole)
-            {
-                user.Rols.Add(rolExists);
-                await _unitOfWork.UserMembers.UpdateAsync(user);
-                await _unitOfWork.SaveChanges();
-            }
-
-            return $"Role {roleName} added to user {model.Username} successfully.";
+                Name = roleName,
+                Description = $"{roleName} role"
+            };
+            await _unitOfWork.Roles.AddAsync(newRole);
+            await _unitOfWork.SaveChanges();
+            existingRole = newRole;
         }
-        return $"Invalid Credentials";
+
+        // 🔥 Aquí está el cambio importante
+        // Si el usuario ya tiene un rol asignado, lo limpiamos antes de agregar el nuevo
+        var existingUserRoles = await _unitOfWork.UserMemberRoles.GetByUserIdAsync(user.Id);
+
+        // 🧹 Eliminar roles antiguos
+        if (existingUserRoles.Any())
+        {
+            _unitOfWork.UserMemberRoles.RemoveRange(existingUserRoles);
+        }
+
+        // 🆕 Asignar nuevo rol
+        await _unitOfWork.UserMemberRoles.AddAsync(new UserMemberRol
+        {
+            UserMemberId = user.Id,
+            RolId = existingRole.Id
+        });
+
+        // 💾 Guardar todo en una sola transacción
+        await _unitOfWork.SaveChanges();
+
+        return $"Rol {roleName} correctamente asignado a {model.Username}.";
     }
+
     public async Task<DataUserDto> RefreshTokenAsync(string refreshToken)
     {
         var dataUserDto = new DataUserDto();

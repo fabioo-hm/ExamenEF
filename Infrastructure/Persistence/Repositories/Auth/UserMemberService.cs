@@ -108,8 +108,8 @@ public class UserMemberService : IUserMemberService
     public async Task<UserMember?> GetByUserNameAsync(string userName, CancellationToken ct = default)
     {
         return await _context.UserMembers
-            .Include(u => u.Rols)
             .Include(u => u.UserMemberRols)
+                .ThenInclude(ur => ur.Rol) // 👈 Esto es CLAVE
             .Include(u => u.RefreshTokens)
             .FirstOrDefaultAsync(u => u.Username == userName, ct);
     }

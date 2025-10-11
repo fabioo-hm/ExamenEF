@@ -76,26 +76,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("roles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Administrator role",
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Mechanic role",
-                            Name = "Mecanico"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Receptionist role",
-                            Name = "Recepcionista"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Auth.UserMember", b =>
