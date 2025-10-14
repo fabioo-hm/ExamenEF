@@ -9,7 +9,7 @@
 </head>
 <body>
 
-  <!-- SIDEBAR -->
+  
   <aside class="sidebar">
     <h2 class="brand">
       <span>AutoTaller</span><span>Manager</span> <span>Recepción</span>
@@ -23,20 +23,20 @@
     </nav>
   </aside>
 
-  <!-- MAIN -->
+  
   <main>
     <h1>Panel de Recepcionista</h1>
     
-    <!-- Dashboard -->
+    
     <section id="inicio" class="section active">
         <div class="header-row">
           <h2>Dashboard de Recepción</h2>
           <p id="fechaActual" style="color: #6b7280; font-size: 1rem;"></p>
         </div>
 
-        <!-- Tarjetas de Métricas Principales -->
+        
         <div class="metrics-grid">
-          <!-- Órdenes del Día -->
+          
           <div class="metric-card">
             <div class="metric-icon ordenes-dia">
               <i class="fas fa-calendar-day"></i>
@@ -47,7 +47,7 @@
             </div>
           </div>
 
-          <!-- Órdenes Pendientes -->
+          
           <div class="metric-card">
             <div class="metric-icon ordenes-pendientes">
               <i class="fas fa-clock"></i>
@@ -58,7 +58,7 @@
             </div>
           </div>
 
-          <!-- Órdenes en Proceso -->
+          
           <div class="metric-card">
             <div class="metric-icon ordenes-proceso">
               <i class="fas fa-tools"></i>
@@ -69,7 +69,7 @@
             </div>
           </div>
 
-          <!-- Clientes Registrados -->
+          
           <div class="metric-card">
             <div class="metric-icon clientes">
               <i class="fas fa-users"></i>
@@ -81,9 +81,9 @@
           </div>
         </div>
 
-        <!-- Estadísticas Detalladas -->
+        
         <div class="stats-container">
-          <!-- Órdenes por Estado -->
+          
           <div class="stat-section">
             <h3>📊 Estado de Órdenes</h3>
             <div class="additional-stats">
@@ -102,7 +102,7 @@
             </div>
           </div>
 
-          <!-- Órdenes Recientes -->
+          
           <div class="stat-section">
             <h3>🕒 Órdenes Recientes</h3>
             <div class="recent-orders" id="recentOrders">
@@ -112,7 +112,7 @@
         </div>
     </section>
 
-    <!-- ===== CLIENTES ===== -->
+    
     <section id="clientes" class="section">
         <div class="header-row">
             <h2>Consulta de Clientes</h2>
@@ -135,13 +135,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Filas dinámicas -->
+                    
                 </tbody>
             </table>
         </div>
     </section>
 
-    <!-- ===== VEHÍCULOS ===== -->
+    
     <section id="vehiculos" class="section">
         <div class="header-row">
             <h2>Consulta de Vehículos</h2>
@@ -166,13 +166,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Filas dinámicas -->
+                    
                 </tbody>
             </table>
         </div>
     </section>
 
-    <!-- ===== ÓRDENES ===== -->
+    
     <section id="ordenes" class="section">
         <div class="header-row">
             <h2>Gestión de Órdenes de Servicio</h2>
@@ -181,7 +181,7 @@
             </div>
         </div>
         
-        <!-- Filtros de Órdenes -->
+        
         <div class="filters-row">
             <div class="filter-group">
                 <label for="filterEstado">Estado:</label>
@@ -215,12 +215,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Filas dinámicas -->
+                    
                 </tbody>
             </table>
         </div>
     </section>
-    <!-- ===== MODAL CREAR ORDEN ===== -->
+    
     <div id="modalCrearOrden" class="modal">
         <div class="modal-content large">
             <h3>Crear Orden de Servicio</h3>
@@ -233,7 +233,7 @@
                             <label for="ordenClienteId">Cliente:</label>
                             <select id="ordenClienteId" required>
                                 <option value="">Seleccionar cliente...</option>
-                                <!-- Opciones se llenarán dinámicamente -->
+                                
                             </select>
                         </div>
                         
@@ -241,12 +241,12 @@
                             <label for="ordenVehiculoId">Vehículo:</label>
                             <select id="ordenVehiculoId" required>
                                 <option value="">Seleccionar vehículo...</option>
-                                <!-- Opciones se llenarán dinámicamente -->
+                                
                             </select>
                         </div>
                         
                         <div class="vehicle-info" id="vehicleInfo">
-                            <!-- Información del vehículo se mostrará aquí -->
+                            
                         </div>
                     </div>
                     
@@ -257,7 +257,7 @@
                             <label for="ordenMecanicoId">Mecánico Asignado:</label>
                             <select id="ordenMecanicoId" required>
                                 <option value="">Seleccionar mecánico...</option>
-                                <!-- Opciones se llenarán dinámicamente -->
+                                
                             </select>
                         </div>
                         
@@ -281,7 +281,7 @@
                 <div class="form-section">
                     <h4>Repuestos y Servicios Adicionales</h4>
                     <div class="repuestos-container">
-                        <!-- Las líneas de repuestos se agregarán aquí dinámicamente -->
+                        
                     </div>
                     <button type="button" id="btnAgregarRepuesto" class="btn btn-small btn-blue">+ Agregar Repuesto</button>
                     
@@ -298,13 +298,13 @@
         </div>
     </div>
 
-    <!-- Template oculto para repuestos -->
+    <
     <div id="repuestoTemplate" class="repuesto-item" style="display: none;">
         <select class="repuesto-select">
             <option value="">Seleccionar repuesto...</option>
         </select>
         <input type="number" class="repuesto-cantidad" min="1" value="1" placeholder="Cantidad">
-        <span class="repuesto-precio">$0.00</span> <!-- Solo para mostrar -->
+        <span class="repuesto-precio">$0.00</span> 
         <span class="repuesto-subtotal">$0.00</span>
         <span class="repuesto-stock" style="font-size: 0.8em; color: #666;">Stock: 0</span>
         <span class="repuesto-code" style="font-size: 0.8em;"></span>

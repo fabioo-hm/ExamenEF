@@ -23,7 +23,7 @@ public class CustomersController : BaseApiController
         _unitofwork = unitofwork;
         _repository = repository;
     }
-    // ✅ GET: api/customers?page=1&size=10&search=John
+    
     [HttpGet]
     public async Task<IActionResult> GetAll(
         [FromQuery] int page = 1,
@@ -57,7 +57,7 @@ public class CustomersController : BaseApiController
         return Ok(dto);
     }
 
-    // ✅ GET: api/customers/{id}
+    
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct = default)
     {
@@ -69,7 +69,7 @@ public class CustomersController : BaseApiController
         return Ok(dto);
     }
 
-    // ✅ POST: api/customers
+    
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateCustomerDto dto, CancellationToken ct = default)
     {
@@ -83,7 +83,7 @@ public class CustomersController : BaseApiController
         return CreatedAtAction(nameof(GetById), new { id = customer.Id }, created);
     }
 
-    // ✅ PUT: api/customers/{id}
+    
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCustomerDto dto, CancellationToken ct = default)
     {
@@ -91,7 +91,7 @@ public class CustomersController : BaseApiController
         if (existing is null)
             return NotFound(new { Message = "Customer not found." });
 
-        // Actualización por reflexión para propiedades privadas (si tus setters son privados)
+        
         if (dto.Name is not null)
             existing.GetType().GetProperty("Name")?.SetValue(existing, dto.Name);
         if (dto.Email is not null)
@@ -105,7 +105,7 @@ public class CustomersController : BaseApiController
         return Ok(updated);
     }
 
-    // ✅ DELETE: api/customers/{id}
+    
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct = default)
     {

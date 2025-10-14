@@ -22,11 +22,11 @@ public class SparePartsController : BaseApiController
             _repo = repo;
         }
 
-        // ✅ POST: api/spareparts
+        
         [HttpPost]
         public async Task<ActionResult<Guid>> Create([FromBody] CreateSparePartDto dto, CancellationToken ct)
         {
-            // Validar si el código ya existe
+            
             var exists = await _repo.ExistsByCodeAsync(dto.Code, ct);
             if (exists)
                 return Conflict($"Ya existe una pieza con el código {dto.Code}.");
@@ -37,7 +37,7 @@ public class SparePartsController : BaseApiController
             return CreatedAtAction(nameof(GetById), new { id }, id);
         }
 
-        // ✅ GET: api/spareparts/all
+        
         [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<SparePartDto>>> GetAll(CancellationToken ct)
         {
@@ -53,7 +53,7 @@ public class SparePartsController : BaseApiController
             return Ok(result);
         }
 
-        // ✅ GET: api/spareparts/{id}
+        
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<SparePartDto>> GetById(Guid id, CancellationToken ct)
         {
@@ -72,7 +72,7 @@ public class SparePartsController : BaseApiController
             return Ok(dto);
         }
 
-        // ✅ GET: api/spareparts/code/{code}
+        
         [HttpGet("code/{code}")]
         public async Task<ActionResult<SparePartDto>> GetByCode(string code, CancellationToken ct)
         {
@@ -91,7 +91,7 @@ public class SparePartsController : BaseApiController
             return Ok(dto);
         }
 
-        // ✅ PUT: api/spareparts/{id}
+        
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateSparePartDto dto, CancellationToken ct)
         {
@@ -113,7 +113,7 @@ public class SparePartsController : BaseApiController
             return NoContent();
         }
 
-        // ✅ DELETE: api/spareparts/{id}
+        
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
         {
@@ -125,7 +125,7 @@ public class SparePartsController : BaseApiController
             return NoContent();
         }
 
-        // ✅ PATCH: api/spareparts/{id}/stock
+    
         [HttpPatch("{id:guid}/stock")]
         public async Task<IActionResult> UpdateStock(Guid id, [FromQuery] int quantityChange, CancellationToken ct)
         {

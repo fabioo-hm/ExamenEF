@@ -5,7 +5,7 @@ class Dashboard {
         this.cache = {
             datos: null,
             timestamp: null,
-            timeout: 2 * 60 * 1000 // 2 minutos de cache
+            timeout: 2 * 60 * 1000 
         };
         this.init();
     }
@@ -15,20 +15,20 @@ class Dashboard {
         this.actualizarFecha();
         this.cargarEstadisticas();
         
-        // Actualizar cada 2 minutos
+        
         setInterval(() => {
             console.log("🔄 Actualizando estadísticas automáticamente...");
             this.cargarEstadisticas();
         }, 120000);
 
-        // Actualizar al volver a la pestaña
+        
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden && this.estaEnInicio()) {
                 this.cargarEstadisticas();
             }
         });
 
-        // Actualizar al cambiar a sección inicio
+        
         this.configurarNavegacion();
     }
 
@@ -66,7 +66,7 @@ class Dashboard {
     }
 
     async cargarEstadisticas() {
-        // Verificar cache
+        
         if (this.cache.datos && this.cache.timestamp && 
             (Date.now() - this.cache.timestamp) < this.cache.timeout) {
             console.log("📊 Usando datos cacheados...");
@@ -83,7 +83,7 @@ class Dashboard {
                 this.cargarEstadisticasAdicionales()
             ]);
 
-            // Guardar en cache
+            
             this.cache.timestamp = Date.now();
             console.log("✅ Estadísticas cargadas exitosamente");
         } catch (error) {
@@ -96,12 +96,12 @@ class Dashboard {
         try {
             console.log("🔢 Cargando contadores básicos...");
             
-            // 🔥 USAR ENDPOINTS CON "all" COMO MENCIONASTE
+            
             const endpoints = [
                 { url: `${API_URL}/customers/all`, key: 'clientes' },
                 { url: `${API_URL}/vehicles/all`, key: 'vehiculos' },
                 { url: `${API_URL}/spareparts/all`, key: 'repuestos' },
-                { url: `${API_URL}/auth/users`, key: 'empleados' } // Este no necesita "all"
+                { url: `${API_URL}/auth/users`, key: 'empleados' } 
             ];
 
             const resultados = await Promise.allSettled(
@@ -122,7 +122,7 @@ class Dashboard {
                 })
             );
 
-            // Procesar resultados
+            
             resultados.forEach(resultado => {
                 if (resultado.status === 'fulfilled') {
                     const { key, count, success } = resultado.value;
@@ -144,7 +144,7 @@ class Dashboard {
 
         } catch (error) {
             console.error('❌ Error en contadores básicos:', error);
-            // En caso de error total, establecer ceros
+            
             ['clientes', 'vehiculos', 'repuestos', 'empleados'].forEach(key => {
                 this.actualizarMetrica(`total${this.capitalize(key)}`, 0);
             });
@@ -162,7 +162,7 @@ class Dashboard {
             const empleados = await response.json();
             console.log(`✅ Empleados cargados: ${empleados.length}`);
 
-            // Contar empleados por rol
+            
             const rolesCount = this.contarRoles(empleados);
             this.actualizarDistribucionRoles(rolesCount);
 
@@ -205,7 +205,7 @@ class Dashboard {
             return;
         }
 
-        // Ordenar roles por cantidad (descendente)
+        
         const rolesOrdenados = Object.entries(rolesCount)
             .sort(([,a], [,b]) => b - a);
 
@@ -241,7 +241,7 @@ class Dashboard {
         } catch (error) {
             console.error('❌ Error cargando estadísticas de repuestos:', error);
             
-            // Datos de ejemplo en caso de error
+            
             const estadisticasEjemplo = {
                 stockBajo: 0,
                 stockCritico: 0,
@@ -262,7 +262,7 @@ class Dashboard {
         let valorTotal = 0;
 
         repuestos.forEach(repuesto => {
-            // 🔥 AJUSTAR SEGÚN LA ESTRUCTURA REAL DE TUS DATOS
+            
             const stock = repuesto.cantidadStock || repuesto.stock || repuesto.quantity || 0;
             const precio = repuesto.precioUnidad || repuesto.precio || repuesto.price || 0;
             
@@ -303,7 +303,7 @@ class Dashboard {
         try {
             console.log("📈 Cargando estadísticas adicionales...");
             
-            // 🔥 INTENTAR CARGAR ÓRDENES Y FACTURAS SI EXISTEN
+            
             const endpointsAdicionales = [
                 { url: `${API_URL}/serviceorders/all`, key: 'ordenes' },
                 { url: `${API_URL}/invoices/all`, key: 'facturas' }
@@ -324,7 +324,7 @@ class Dashboard {
                 })
             );
 
-            // Procesar órdenes
+            
             let ordenes = { pendientes: 0, completadas: 0, total: 0 };
             const ordenesResult = resultados.find(r => r.status === 'fulfilled' && r.value.key === 'ordenes');
             if (ordenesResult && ordenesResult.value.success) {
@@ -337,7 +337,7 @@ class Dashboard {
                 ).length;
                 ordenes.total = ordenesData.length;
             } else {
-                // Datos de ejemplo si no hay endpoint
+                
                 ordenes = {
                     pendientes: Math.floor(Math.random() * 10) + 5,
                     completadas: Math.floor(Math.random() * 30) + 20,
@@ -345,13 +345,13 @@ class Dashboard {
                 };
             }
 
-            // Procesar facturas
+            
             let facturas = { total: 0 };
             const facturasResult = resultados.find(r => r.status === 'fulfilled' && r.value.key === 'facturas');
             if (facturasResult && facturasResult.value.success) {
                 facturas.total = facturasResult.value.data.length;
             } else {
-                // Datos de ejemplo si no hay endpoint
+                
                 facturas.total = Math.floor(Math.random() * 50) + 25;
             }
 
@@ -377,7 +377,7 @@ class Dashboard {
     }
 
     actualizarResumenMensual() {
-        // Datos mensuales de ejemplo (podrías implementar filtros por fecha después)
+        
         const datosMensuales = {
             clientes: Math.floor(Math.random() * 8) + 2,
             vehiculos: Math.floor(Math.random() * 12) + 3,
@@ -409,7 +409,7 @@ class Dashboard {
         this.actualizarResumenMensual();
     }
 
-    // ===== MÉTODOS AUXILIARES =====
+    
 
     actualizarMetrica(elementId, valor) {
         const elemento = document.getElementById(elementId);
@@ -509,7 +509,7 @@ class Dashboard {
         }, 5000);
     }
 
-    // Método para forzar actualización manual
+    
     actualizarManual() {
         console.log("🔄 Actualización manual solicitada");
         this.cache.datos = null;
@@ -525,7 +525,7 @@ class Dashboard {
     }
 }
 
-// Inicializar el dashboard
+
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         if (document.getElementById('inicio')) {

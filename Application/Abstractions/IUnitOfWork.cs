@@ -17,7 +17,7 @@ public interface IUnitOfWork
     IRefreshTokenService RefreshTokens { get; }
     IRolService Roles { get; }
     IVehicleRepository Vehicles { get; }
-    // Task<int> SaveAsync();
+    
     Task<int> SaveChanges(CancellationToken ct = default);
     Task ExecuteInTransactionAsync(Func<CancellationToken, Task> operation, CancellationToken ct = default);
 }

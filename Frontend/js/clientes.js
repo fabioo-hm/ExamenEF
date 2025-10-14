@@ -1,11 +1,11 @@
 import { API_URL } from "./config.js"; 
-// En config.js debería estar: export const API_URL = "http://localhost:5104/api";
+
 
 document.addEventListener("DOMContentLoaded", async () => {
   const tablaBody = document.querySelector("#tablaClientes tbody");
 
   try {
-    // 1️⃣ Traer clientes y vehículos
+    
     const [clientesRes, vehiculosRes] = await Promise.all([
       fetch(`${API_URL}/customers/all`),
       fetch(`${API_URL}/vehicles/all`)
@@ -18,9 +18,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const clientes = await clientesRes.json();
     const vehiculos = await vehiculosRes.json();
 
-    // 2️⃣ Relacionar clientes con sus vehículos
+    
     const filasHTML = clientes.map(cliente => {
-      // Buscar los vehículos que tienen el mismo ID de cliente
+      
       const vehiculosCliente = vehiculos.filter(v => v.customerId === cliente.id);
       const vinList = vehiculosCliente.map(v => v.vin || v.placa || "—").join(", ");
 
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       `;
     }).join("");
 
-    // 3️⃣ Insertar filas en la tabla
+    
     tablaBody.innerHTML = filasHTML;
 
   } catch (error) {
@@ -43,43 +43,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     tablaBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:red;">Error al cargar los datos</td></tr>`;
   }
 });
-// === MODALES ===
+
 const modalCrear = document.getElementById("modalCrearCliente");
 const modalEditar = document.getElementById("modalEditarCliente");
 const modalEliminar = document.getElementById("modalEliminarCliente");
 
-// Botones abrir modales
 document.getElementById("btnAgregarCliente").addEventListener("click", () => modalCrear.style.display = "flex");
 document.getElementById("btnEditarCliente").addEventListener("click", () => modalEditar.style.display = "flex");
 document.getElementById("btnEliminarCliente").addEventListener("click", () => modalEliminar.style.display = "flex");
 
-// Botones cerrar modales
+
 document.getElementById("clienteCerrarCrear").addEventListener("click", () => modalCrear.style.display = "none");
 document.getElementById("clienteCerrarEditar").addEventListener("click", () => modalEditar.style.display = "none");
 document.getElementById("clienteCerrarEliminar").addEventListener("click", () => modalEliminar.style.display = "none");
 
-// === CREAR CLIENTE + VEHÍCULO ===
+
 document.getElementById("formCrearCliente").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // Datos del cliente
+  
   const nuevoCliente = {
     name: document.getElementById("clienteCrearNombre").value,
     phone: document.getElementById("clienteCrearTelefono").value,
     email: document.getElementById("clienteCrearEmail").value
   };
 
-  // Datos del vehículo
+  
   const nuevoVehiculo = {
     vin: document.getElementById("clienteCrearPlaca").value,
     brand: document.getElementById("clienteCrearMarca").value,
     model: document.getElementById("clienteCrearModelo").value,
-    year: parseInt(document.getElementById("clienteCrearAno").value), // ← int
-    mileage: parseFloat(document.getElementById("clienteCrearKilometraje").value) // ← double
+    year: parseInt(document.getElementById("clienteCrearAno").value), 
+    mileage: parseFloat(document.getElementById("clienteCrearKilometraje").value) 
   };
 
   try {
-    // 1️⃣ Crear cliente
+    
     const resCliente = await fetch(`${API_URL}/customers`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -89,9 +88,9 @@ document.getElementById("formCrearCliente").addEventListener("submit", async (e)
     if (!resCliente.ok) throw new Error("Error al crear cliente");
 
     const clienteCreado = await resCliente.json();
-    const clienteId = clienteCreado.id || clienteCreado.customerId; // según backend
+    const clienteId = clienteCreado.id || clienteCreado.customerId; 
 
-    // 2️⃣ Crear vehículo vinculado
+    
     const vehiculoConCliente = { ...nuevoVehiculo, customerId: clienteId };
 
     const resVehiculo = await fetch(`${API_URL}/vehicles`, {
@@ -113,7 +112,7 @@ document.getElementById("formCrearCliente").addEventListener("submit", async (e)
 });
 
 
-// === EDITAR CLIENTE (PUT) ===
+
 document.getElementById("formEditarCliente").addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -143,7 +142,7 @@ document.getElementById("formEditarCliente").addEventListener("submit", async (e
   }
 });
 
-// === ELIMINAR CLIENTE (DELETE) ===
+
 document.getElementById("formEliminarCliente").addEventListener("submit", async (e) => {
   e.preventDefault();
 

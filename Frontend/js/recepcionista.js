@@ -140,7 +140,6 @@ function inicializarModales() {
     });
 }
 
-// ===== FUNCIONES PARA CARGAR DATOS =====
 
 async function cargarDashboard() {
     try {
@@ -187,7 +186,7 @@ async function cargarVehiculos() {
             obtenerClientes()
         ]);
 
-        // Agregar nombre del cliente
+        
         const vehiculosConCliente = vehiculos.map(v => {
             const cliente = clientes.find(c => c.id === v.customerId);
             return { ...v, clientName: cliente ? cliente.name : "No asignado" };
@@ -206,7 +205,7 @@ async function cargarOrdenes() {
     try {
         console.log("🔄 Cargando órdenes...");
         
-        // Mostrar loading
+       
         tablaOrdenes.innerHTML = `
             <tr>
                 <td colspan="8" class="loading">Cargando órdenes...</td>
@@ -225,7 +224,7 @@ async function cargarOrdenes() {
     }
 }
 
-// ===== FUNCIONES DE LA API =====
+
 
 async function obtenerClientes() {
     try {
@@ -275,7 +274,7 @@ async function obtenerMecanicos() {
   }
 }
 
-// 📦 Obtener repuestos desde la API - CORREGIDA PARA LA ESTRUCTURA SparePart
+
 async function obtenerRepuestos() {
     try {
         console.log("🔄 Intentando obtener repuestos desde:", `${API_URL}/spareparts/all`);
@@ -290,7 +289,7 @@ async function obtenerRepuestos() {
         console.log("🔍 Repuestos obtenidos (crudos):", repuestos);
         console.log(`✅ Obtenidos ${repuestos.length} repuestos`);
         
-        // Mapear correctamente según la estructura SparePart
+        
         const repuestosMapeados = repuestos.map(repuesto => {
             return {
                 id: repuesto.id,
@@ -307,7 +306,7 @@ async function obtenerRepuestos() {
     } catch (error) {
         console.error("❌ Error obteniendo repuestos:", error);
         
-        // Datos de respaldo CORREGIDOS - usando description en lugar de name
+        
         return [
             { id: "1", code: "FIL-ACE", description: "Filtro de aceite", price: 15.00, stock: 10 },
             { id: "2", code: "ACE-SYN", description: "Aceite sintético 5W-30", price: 12.50, stock: 25 },
@@ -323,10 +322,10 @@ async function obtenerMetricasRecepcion() {
         const clientes = await obtenerClientes();
         const totalClientes = clientes.length;
 
-        const ordenesHoy = Math.floor(Math.random() * 8) + 3; // 3-10 órdenes
-        const ordenesPendientes = Math.floor(Math.random() * 15) + 5; // 5-20 órdenes
-        const ordenesProceso = Math.floor(Math.random() * 12) + 3; // 3-15 órdenes
-        const ordenesCompletadas = Math.floor(Math.random() * 25) + 10; // 10-35 órdenes
+        const ordenesHoy = Math.floor(Math.random() * 8) + 3; 
+        const ordenesPendientes = Math.floor(Math.random() * 15) + 5; 
+        const ordenesProceso = Math.floor(Math.random() * 12) + 3; 
+        const ordenesCompletadas = Math.floor(Math.random() * 25) + 10; 
 
         console.log("📊 Métricas del dashboard (simuladas):", {
             ordenesHoy,
@@ -355,7 +354,7 @@ async function obtenerMetricasRecepcion() {
     }
 }
 
-// 📋 Obtener órdenes
+
 async function obtenerOrdenes() {
   try {
     const response = await fetch(`${API_URL}/serviceorders/all`);
@@ -364,7 +363,7 @@ async function obtenerOrdenes() {
     const ordenes = await response.json();
     console.log(`✅ Obtenidas ${ordenes.length} órdenes desde la API`);
 
-    // Enriquecer las órdenes con datos adicionales
+    
     return await enriquecerOrdenesConDatosCompletos(ordenes);
 
   } catch (error) {
@@ -376,7 +375,7 @@ async function obtenerOrdenes() {
 
 async function enriquecerOrdenesConDatosCompletos(ordenes) {
   try {
-    // Obtener datos adicionales necesarios
+    
     const [vehiculos, clientes, mecanicos, repuestos] = await Promise.all([
       obtenerVehiculos(),
       obtenerClientes(),
@@ -387,32 +386,32 @@ async function enriquecerOrdenesConDatosCompletos(ordenes) {
     console.log("🔄 Enriqueciendo órdenes con datos adicionales...");
 
     return ordenes.map(orden => {
-      // Buscar vehículo relacionado
+      
       const vehiculo = vehiculos.find(v => v.id === orden.vehicleId);
       
-      // Buscar cliente a través del vehículo
+      
       const cliente = vehiculo ? clientes.find(c => c.id === vehiculo.customerId) : null;
       
-      // Buscar mecánico
+      
       const mecanico = mecanicos.find(m => m.id === orden.userMemberId);
 
-      // Buscar detalles de repuestos para esta orden
+      
       const detallesRepuestos = orden.orderDetails || [];
 
-      // Calcular costo total
+      
       const totalRepuestos = detallesRepuestos.reduce((total, detalle) => {
         const repuesto = repuestos.find(r => r.id === detalle.sparePartId);
         return total + (detalle.quantity * detalle.unitCost);
       }, 0);
 
-      // Mapear estados
+      
       const estados = {
         1: "Pendiente",
         2: "En Proceso", 
         3: "Completado",
       };
 
-      // Mapear tipos de servicio
+      
       const tiposServicio = {
         1: "Mantenimiento preventivo",
         2: "Reparación",
@@ -459,14 +458,14 @@ async function enriquecerOrdenesConDatosCompletos(ordenes) {
         totalCost: totalRepuestos,
         notes: orden.notes || "",
         orderDetails: detallesRepuestos,
-        // Datos originales para depuración
+        
         _original: orden
       };
     });
 
   } catch (error) {
     console.error("❌ Error enriqueciendo órdenes:", error);
-    // Si hay error, devolver las órdenes básicas
+    
     return ordenes.map(orden => ({
       id: orden.id,
       vehicle: { brand: "Error cargando", model: "" },
@@ -476,7 +475,7 @@ async function enriquecerOrdenesConDatosCompletos(ordenes) {
       entryDate: orden.entryDate,
       estimatedDeliveryDate: orden.estimatedDeliveryDate,
       mechanic: { name: "Error cargando" },
-      _original: orden // Mantener datos originales para debug
+      _original: orden 
     }));
   }
 }
@@ -516,12 +515,12 @@ async function buscarClientes() {
     try {
         let clientes;
         if (termino) {
-            // Buscar clientes por término
+            
             const response = await fetch(`${API_URL}/customers/search?q=${encodeURIComponent(termino)}`);
             if (!response.ok) throw new Error("Error en búsqueda de clientes");
             clientes = await response.json();
         } else {
-            // Cargar todos los clientes
+            
             clientes = await obtenerClientes();
         }
         
@@ -552,7 +551,7 @@ async function buscarVehiculos() {
     }
 }
 
-// ===== RENDERIZADO DE DATOS =====
+
 
 function actualizarMetricasDashboard(metricas) {
     document.getElementById("totalOrdenesDia").textContent = metricas.ordenesHoy || 0;
@@ -630,7 +629,7 @@ function renderizarTablaOrdenes(ordenes) {
   }
 
   tablaOrdenes.innerHTML = ordenes.map(orden => {
-    // Manejar casos donde los datos puedan ser undefined
+   
     const vehicleBrand = orden.vehicle?.brand || 'N/A';
     const vehicleModel = orden.vehicle?.model || '';
     const clientName = orden.client?.name || 'N/A';
@@ -716,7 +715,7 @@ function renderizarOrdenesRecientes(ordenes) {
     `).join('');
 }
 
-// ===== FUNCIONALIDADES DEL MODAL DE ORDEN =====
+
 
 async function cargarDatosParaOrden() {
     await cargarClientesParaOrden();
@@ -822,19 +821,19 @@ async function crearOrden() {
   }
 
   try {
-    // Preparar datos de la orden
+    
     const ordenData = {
       vehicleId: vehiculoId,
       serviceType: parseInt(tipoServicio),
       userMemberId: parseInt(mecanicoId),
       entryDate: new Date().toISOString().split('T')[0],
       estimatedDeliveryDate: fechaEntrega,
-      orderStatus: 1 // Pendiente
+      orderStatus: 1 
     };
 
     console.log("📦 Datos de orden a enviar:", ordenData);
 
-    // 1️⃣ Crear la orden principal
+    
     const response = await fetch(`${API_URL}/serviceorders`, {
       method: 'POST',
       headers: { 
@@ -853,7 +852,7 @@ async function crearOrden() {
     const nuevaOrden = await response.json();
     console.log("✅ Orden creada:", nuevaOrden);
 
-    // 2️⃣ Crear detalles de repuestos CORREGIDO
+    
     const repuestos = document.querySelectorAll(".repuesto-item");
     let detallesCreados = 0;
     let erroresRepuestos = [];
@@ -864,7 +863,7 @@ async function crearOrden() {
       const sparePartId = selectElement.value;
       const quantity = parseInt(rep.querySelector(".repuesto-cantidad").value) || 0;
       
-      // ✅ CORRECCIÓN: Obtener el precio del dataset del option seleccionado
+      
       const unitCost = parseFloat(selectedOption?.dataset.precio) || 0;
 
       console.log("🔍 Validando repuesto:", {
@@ -874,7 +873,7 @@ async function crearOrden() {
         selectedOption: selectedOption?.textContent
       });
 
-      // Validaciones más estrictas
+      
       if (!sparePartId) {
         console.warn("⚠️ Repuesto sin ID seleccionado, omitiendo...");
         continue;
@@ -892,7 +891,7 @@ async function crearOrden() {
         continue;
       }
 
-      // Verificar stock si está disponible
+      
       const stockDisponible = parseInt(selectedOption?.dataset.stock) || 0;
       if (stockDisponible > 0 && quantity > stockDisponible) {
         console.warn("⚠️ Stock insuficiente:", { quantity, stockDisponible });
@@ -933,7 +932,7 @@ async function crearOrden() {
       }
     }
 
-    // Mostrar resultado
+    
     let mensaje = `Orden #${nuevaOrden.id.substring(0, 8)} creada exitosamente.`;
     
     if (detallesCreados > 0) {
@@ -949,16 +948,16 @@ async function crearOrden() {
       mostrarExito(mensaje);
     }
 
-    // Limpiar y cerrar modal
+    
     document.getElementById("modalCrearOrden").style.display = "none";
     document.getElementById("formCrearOrden").reset();
     
-    // Limpiar repuestos
+    
     const repuestosContainer = document.querySelector(".repuestos-container");
     const repuestosExistentes = repuestosContainer.querySelectorAll(".repuesto-item:not(#repuestoTemplate)");
     repuestosExistentes.forEach(rep => rep.remove());
 
-    // Recargar datos
+    
     cargarOrdenes();
     cargarDashboard();
 
@@ -968,7 +967,7 @@ async function crearOrden() {
   }
 }
 
-// ===== FUNCIONES AUXILIARES =====
+
 
 function actualizarFechaActual() {
     const ahora = new Date();
@@ -1001,9 +1000,9 @@ function mostrarExito(mensaje) {
     alert(`Éxito: ${mensaje}`);
 }
 
-// ===== FUNCIONES PARA REPUESTOS =====
 
-// 📦 Agregar línea de repuesto
+
+
 function agregarLineaRepuesto() {
     const container = document.querySelector(".repuestos-container");
     const template = document.getElementById("repuestoTemplate");
@@ -1016,10 +1015,10 @@ function agregarLineaRepuesto() {
     
     try {
         const nuevaLinea = template.cloneNode(true);
-        nuevaLinea.id = ""; // Remover el ID para evitar duplicados
-        nuevaLinea.style.display = "flex"; // Mostrar la línea
+        nuevaLinea.id = ""; 
+        nuevaLinea.style.display = "flex"; 
         
-        // Configurar eventos
+        
         const quitarBtn = nuevaLinea.querySelector(".quitar-repuesto");
         const selectElement = nuevaLinea.querySelector(".repuesto-select");
         const cantidadInput = nuevaLinea.querySelector(".repuesto-cantidad");
@@ -1042,7 +1041,7 @@ function agregarLineaRepuesto() {
                 actualizarSubtotalRepuesto(this);
             });
             
-            // Cargar repuestos en este select específico
+            
             cargarRepuestosParaSelect(selectElement);
             
             container.appendChild(nuevaLinea);
@@ -1061,13 +1060,13 @@ async function cargarRepuestosParaOrden() {
     const container = document.querySelector(".repuestos-container");
     if (!container) return;
     
-    // Limpiar repuestos existentes (excepto el template)
+    
     const repuestosExistentes = container.querySelectorAll(".repuesto-item:not(#repuestoTemplate)");
     repuestosExistentes.forEach(repuesto => {
         repuesto.remove();
     });
     
-    // Agregar una línea inicial
+    
     agregarLineaRepuesto();
 }
 
@@ -1076,7 +1075,7 @@ async function cargarRepuestosParaSelect(selectElement) {
         console.log("🔄 Cargando repuestos para select...");
         const repuestos = await obtenerRepuestos();
         
-        // Limpiar el select
+        
         selectElement.innerHTML = '<option value="">Seleccionar repuesto...</option>';
         
         if (!repuestos || repuestos.length === 0) {
@@ -1085,7 +1084,7 @@ async function cargarRepuestosParaSelect(selectElement) {
             return;
         }
         
-        // Agregar repuestos al select
+        
         repuestos.forEach(repuesto => {
             const option = document.createElement("option");
             option.value = repuesto.id;
@@ -1093,7 +1092,7 @@ async function cargarRepuestosParaSelect(selectElement) {
             option.dataset.precio = repuesto.price;
             option.dataset.stock = repuesto.stock;
             option.dataset.code = repuesto.code;
-            option.dataset.description = repuesto.description; // CORREGIDO: description en lugar de name
+            option.dataset.description = repuesto.description; 
             selectElement.appendChild(option);
         });
         
@@ -1101,7 +1100,7 @@ async function cargarRepuestosParaSelect(selectElement) {
 
     } catch (error) {
         console.error("❌ Error cargando repuestos en select:", error);
-        // Datos de respaldo CORREGIDOS - usando description en lugar de name
+        
         selectElement.innerHTML = `
             <option value="">Seleccionar repuesto...</option>
             <option value="1" data-precio="15.00" data-stock="10" data-code="FIL-ACE" data-description="Filtro de aceite">FIL-ACE - Filtro de aceite - $15.00</option>
@@ -1139,7 +1138,7 @@ function actualizarPrecioRepuesto(selectElement) {
     const precio = parseFloat(selectedOption.dataset.precio) || 0;
     const stock = parseInt(selectedOption.dataset.stock) || 0;
     const code = selectedOption.dataset.code || "";
-    const description = selectedOption.dataset.description || ""; // CORREGIDO: description en lugar de name
+    const description = selectedOption.dataset.description || ""; 
     
     precioElement.textContent = `$${precio.toFixed(2)}`;
     
@@ -1153,10 +1152,10 @@ function actualizarPrecioRepuesto(selectElement) {
         codeElement.textContent = code;
     }
     
-    // Actualizar tooltip con información completa
+    
     selectElement.title = `${code} - ${description} | Stock: ${stock} | Precio: $${precio.toFixed(2)}`;
     
-    // Resetear cantidad si excede el stock
+    
     const cantidadActual = parseInt(cantidadInput.value) || 0;
     if (cantidadActual > stock) {
         cantidadInput.value = Math.min(cantidadActual, stock);
@@ -1165,7 +1164,7 @@ function actualizarPrecioRepuesto(selectElement) {
         }
     }
     
-    cantidadInput.max = stock; // Establecer máximo según stock
+    cantidadInput.max = stock; 
     
     actualizarSubtotalRepuesto(cantidadInput);
 }
@@ -1201,7 +1200,7 @@ function calcularTotalOrden() {
     }
 }
 
-// Función de depuración para repuestos
+
 async function debugRepuestos() {
     console.log("=== DEBUG REPUESTOS ===");
     try {
@@ -1219,7 +1218,7 @@ async function debugRepuestos() {
                 selectedText: select.selectedOptions[0]?.textContent
             });
             
-            // Mostrar todas las opciones
+            
             console.log("Opciones disponibles:");
             Array.from(select.options).forEach(option => {
                 console.log(`  - ${option.value}: ${option.textContent}`, {

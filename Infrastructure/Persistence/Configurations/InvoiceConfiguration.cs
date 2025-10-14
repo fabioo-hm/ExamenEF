@@ -38,8 +38,8 @@ public sealed class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.Property(s => s.PaymentMethod)
             .IsRequired()
             .HasConversion(
-                v => v.ToString(),                             // Enum -> string
-                v => (PaymentMethod)Enum.Parse(typeof(PaymentMethod), v)) // string -> Enum
+                v => v.ToString(),                             
+                v => (PaymentMethod)Enum.Parse(typeof(PaymentMethod), v)) 
             .HasColumnType("varchar(50)");
     }
 }

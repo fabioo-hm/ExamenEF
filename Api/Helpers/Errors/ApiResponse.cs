@@ -18,7 +18,7 @@ public class ApiResponse
 
     public ApiResponse()
     {
-        Message = GetDefaultMessage(200); // Default to 200 OK message or any appropriate status code
+        Message = GetDefaultMessage(200); 
     }
 
     private string GetDefaultMessage(int statusCode)

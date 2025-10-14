@@ -27,7 +27,7 @@ public class InvoicesController : BaseApiController
 
     }
 
-    // ✅ GET: api/invoices?page=1&size=10
+    
     [HttpGet]
     public async Task<IActionResult> GetAll(
         [FromQuery] int page = 1,
@@ -56,7 +56,7 @@ public class InvoicesController : BaseApiController
         });
     }
 
-    // ✅ GET: api/invoices/{id}
+    
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct = default)
     {
@@ -83,7 +83,7 @@ public class InvoicesController : BaseApiController
         var dto = _mapper.Map<IEnumerable<InvoiceDto>>(invoice);
         return Ok(dto);
     }
-    // ✅ POST: api/invoices
+    
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateInvoiceDto dto, CancellationToken ct = default)
     {
@@ -103,7 +103,7 @@ public class InvoicesController : BaseApiController
         return CreatedAtAction(nameof(GetById), new { id = invoice.Id }, created);
     }
 
-    // ✅ PUT: api/invoices/{id}
+    
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateInvoiceDto dto, CancellationToken ct = default)
     {
@@ -111,7 +111,7 @@ public class InvoicesController : BaseApiController
         if (existing is null)
             return NotFound(new { Message = "Invoice not found." });
 
-        // Actualizar valores
+        
         existing.GetType().GetProperty("ServiceOrderId")?.SetValue(existing, dto.ServiceOrderId);
         existing.GetType().GetProperty("LaborCost")?.SetValue(existing, dto.LaborCost);
         existing.GetType().GetProperty("PartsTotal")?.SetValue(existing, dto.PartsTotal);
@@ -132,7 +132,7 @@ public class InvoicesController : BaseApiController
         return Ok(updated);
     }
 
-    // ✅ DELETE: api/invoices/{id}
+
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct = default)
     {

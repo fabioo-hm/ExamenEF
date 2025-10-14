@@ -1,4 +1,4 @@
-/* ===== RESET ===== */
+
 * {
     margin: 0;
     padding: 0;
@@ -12,7 +12,7 @@ body {
     display: flex;
 }
 
-/* ===== SIDEBAR ===== */
+
 .sidebar {
     background: #1d222c; 
     color: #e2e8f0; 
@@ -91,7 +91,7 @@ nav {
     color: #fff;
 }
 
-/* ===== BOTÓN CERRAR SESIÓN ===== */
+
 #logoutBtn {
     background: #2a37a7;
     margin: 2rem auto 0 auto;
@@ -110,7 +110,7 @@ nav {
     background: #1e3a8a;
 }
 
-/* ===== MAIN ===== */
+
 main {
     margin-left: 380px;
     padding: 3rem;
@@ -173,7 +173,7 @@ h2 {
 .btn-green:hover {
     background-color: #059669;
 }
-/* ===== ESTILOS GENERALES ===== */
+
 .header-row {
     display: flex;
     justify-content: space-between;
@@ -229,7 +229,7 @@ h2 {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* ===== TABLAS ===== */
+
 .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -251,13 +251,13 @@ h2 {
     background-color: #f3f4f6;
 }
 
-/* IDs específicos para cada tabla */
+
 #tablaClientes th { background-color: #1e3a8a; }
 #tablaVehiculos th { background-color: #1e3a8a; }
 #tablaRepuestos th { background-color: #1e3a8a; }
 #tablaEmpleados th { background-color: #1e3a8a; }
 
-/* ===== MODALES ===== */
+
 .modal {
     display: none;
     position: fixed;
@@ -325,13 +325,13 @@ h2 {
     color: #9ca3af;
 }
 
-/* Asegurar que todos los botones de los modales tengan el mismo estilo */
+
 .modal-content .btn {
     width: 100%;
     margin-top: 0.5rem;
 }
 
-/* Estilos específicos para botones en modales */
+
 .modal-content .btn-gray {
     background: #6b7280;
     color: white;
@@ -344,7 +344,7 @@ h2 {
     margin-bottom: 2rem;
     padding: 1rem;
     }
-/* ===== DASHBOARD / INICIO ===== */
+
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
