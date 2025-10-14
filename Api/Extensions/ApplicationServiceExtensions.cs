@@ -70,6 +70,7 @@ public static class ApplicationServiceExtensions
         services.AddAutoMapper(typeof(ServiceOrderProfile).Assembly);
         services.AddAutoMapper(typeof(SparePartProfile).Assembly);
         services.AddAutoMapper(typeof(VehicleProfile).Assembly);
+        services.AddAutoMapper(typeof(AuditoriaProfile).Assembly);
     }
     public static IServiceCollection AddCustomRateLimiter(this IServiceCollection services)
     {

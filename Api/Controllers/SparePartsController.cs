@@ -16,12 +16,42 @@ public class SparePartsController : BaseApiController
         private readonly IMediator _mediator;
         private readonly ISparePartRepository _repo;
 
-        public SparePartsController(IMediator mediator, ISparePartRepository repo)
+    public SparePartsController(IMediator mediator, ISparePartRepository repo)
+    {
+        _mediator = mediator;
+        _repo = repo;
+    }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetPaged(
+            [FromQuery] int page = 1,
+            [FromQuery] int size = 10,
+            [FromQuery] string? search = null,
+            CancellationToken ct = default)
         {
-            _mediator = mediator;
-            _repo = repo;
-        }
+            var parts = await _repo.GetPagedAsync(page, size, search, ct);
+            var total = await _repo.CountAsync(search, ct);
 
+            Response.Headers.Add("X-Total-Count", total.ToString());
+            Response.Headers.Add("X-Page-Number", page.ToString());
+            Response.Headers.Add("X-Page-Size", size.ToString());
+
+            var result = parts.Select(p => new SparePartDto(
+                p.Id,
+                p.Code ?? string.Empty,
+                p.Description ?? string.Empty,
+                p.StockQuantity,
+                p.UnitPrice
+            ));
+
+            return Ok(new
+            {
+                Total = total,
+                Page = page,
+                Size = size,
+                Data = result
+            });
+        }
         // ✅ POST: api/spareparts
         [HttpPost]
         public async Task<ActionResult<Guid>> Create([FromBody] CreateSparePartDto dto, CancellationToken ct)

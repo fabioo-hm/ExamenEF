@@ -22,6 +22,39 @@ public class ServiceOrdersController : BaseApiController
         _mediator = mediator;
         _repo = repo;
     }
+    [HttpGet]
+    public async Task<IActionResult> GetPaged(
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 10,
+        [FromQuery] string? search = null,
+        CancellationToken ct = default)
+    {
+        var orders = await _repo.GetPagedAsync(page, size, search, ct);
+        var total = await _repo.CountAsync(search, ct);
+
+        // Agregamos los encabezados requeridos
+        Response.Headers.Add("X-Total-Count", total.ToString());
+        Response.Headers.Add("X-Page-Number", page.ToString());
+        Response.Headers.Add("X-Page-Size", size.ToString());
+
+        var result = orders.Select(o => new ServiceOrderDto(
+            o.Id,
+            o.VehicleId,
+            o.ServiceType,
+            o.UserMemberId,
+            o.EntryDate,
+            o.EstimatedDeliveryDate,
+            o.OrderStatus
+        ));
+
+        return Ok(new
+        {
+            Total = total,
+            Page = page,
+            Size = size,
+            Data = result
+        });
+    }
 
     // ✅ POST: api/serviceorders
     [HttpPost]

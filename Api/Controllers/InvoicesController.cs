@@ -27,7 +27,6 @@ public class InvoicesController : BaseApiController
 
     }
 
-    // ✅ GET: api/invoices?page=1&size=10
     [HttpGet]
     public async Task<IActionResult> GetAll(
         [FromQuery] int page = 1,
@@ -36,6 +35,8 @@ public class InvoicesController : BaseApiController
     {
         var invoices = await _repository.GetPagedAsync(page, size, ct);
         var total = await _repository.CountAsync(ct);
+
+        Response.Headers.Add("X-Total-Count", total.ToString());
 
         var result = invoices.Select(i => new InvoiceDto(
             i.Id,

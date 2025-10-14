@@ -34,6 +34,10 @@ public class CustomersController : BaseApiController
         var customers = await _repository.GetPagedAsync(page, size, search, ct);
         var total = await _repository.CountAsync(search, ct);
 
+        Response.Headers.Add("X-Total-Count", total.ToString());
+        Response.Headers.Add("X-Page-Number", page.ToString());
+        Response.Headers.Add("X-Page-Size", size.ToString());
+
         var result = customers.Select(c => new CustomerDto(
             c.Id,
             c.Name ?? string.Empty,
@@ -49,6 +53,7 @@ public class CustomersController : BaseApiController
             Data = result
         });
     }
+    
     [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<CustomerDto>>> GetAll(CancellationToken ct)
     {

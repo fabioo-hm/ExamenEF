@@ -23,6 +23,7 @@ public class UnitOfWork : IUnitOfWork
     private IUserMemberRolService? _userMemberRoles;
     private IRefreshTokenService? _refreshTokens;
     private IRolService? _roles;
+    private IAuditoriaRepository? _auditorias;
 
     public UnitOfWork(AutoTallerDbContext context)
     {
@@ -41,6 +42,7 @@ public class UnitOfWork : IUnitOfWork
     public IUserMemberRolService UserMemberRoles => _userMemberRoles ??= new UserMemberRolService(_context);
     public IRefreshTokenService RefreshTokens => _refreshTokens ??= new RefreshTokenService(_context);
     public IRolService Roles => _roles ??= new RolService(_context);
+    public IAuditoriaRepository Auditorias => _auditorias ??= new AuditoriaRepository(_context);
 
     public Task<int> SaveChanges(CancellationToken ct = default)
         => _context.SaveChangesAsync(ct);

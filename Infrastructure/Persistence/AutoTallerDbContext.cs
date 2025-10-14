@@ -20,6 +20,7 @@ public sealed class AutoTallerDbContext(DbContextOptions<AutoTallerDbContext> op
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<SparePart> SpareParts => Set<SparePart>();
     public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<Auditoria> Auditorias => Set<Auditoria>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
         => modelBuilder.ApplyConfigurationsFromAssembly(typeof(AutoTallerDbContext).Assembly);
 }
