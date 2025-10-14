@@ -34,4 +34,24 @@ public class ServiceOrder
         EntryDate = entryDate;
         EstimatedDeliveryDate = estimatedDeliveryDate;
     }
+    public void UpdateStatus(OrderStatus newStatus)
+    {
+        OrderStatus = newStatus;
+    }
+
+    public void Update(
+        Guid vehicleId, 
+        ServiceType serviceType, 
+        int userMemberId, 
+        DateTime entryDate, 
+        DateTime estimatedDeliveryDate, 
+        OrderStatus orderStatus)
+    {
+        VehicleId = vehicleId;
+        ServiceType = serviceType;
+        UserMemberId = userMemberId;
+        EntryDate = entryDate;
+        EstimatedDeliveryDate = estimatedDeliveryDate;
+        OrderStatus = orderStatus;
+    }
 }

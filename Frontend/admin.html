@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/admin.css">
+  <title>Panel de Administración | AutoTaller Manager</title>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2 class="brand">
+      <span>AutoTaller</span><span>Manager</span> <span>Admin</span>
+    </h2>
+    <nav>
+      <a href="#" class="nav-link active" data-section="inicio"> Inicio</a>
+      <a href="#" class="nav-link" data-section="clientes"> Clientes</a>
+      <a href="#" class="nav-link" data-section="carros"> Carros</a>
+      <a href="#" class="nav-link" data-section="repuestos"> Repuestos</a>
+      <a href="#" class="nav-link" data-section="empleados"> Empleados</a>
+      <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <h1>Panel de Administración</h1>
+    <!-- Dashboard -->
+    <section id="inicio" class="section active">
+        <div class="header-row">
+        <h2>Dashboard General</h2>
+        <p id="fechaActual" style="color: #6b7280; font-size: 1rem;"></p>
+        </div>
+
+        <!-- Tarjetas de Métricas Principales -->
+        <div class="metrics-grid">
+        <!-- Clientes -->
+        <div class="metric-card">
+            <div class="metric-icon clientes">
+            <i class="fas fa-users"></i>
+            </div>
+            <div class="metric-content">
+            <h3 id="totalClientes">0</h3>
+            <p>Total Clientes</p>
+            </div>
+        </div>
+
+        <!-- Vehículos -->
+        <div class="metric-card">
+            <div class="metric-icon vehiculos">
+            <i class="fas fa-car"></i>
+            </div>
+            <div class="metric-content">
+            <h3 id="totalVehiculos">0</h3>
+            <p>Total Vehículos</p>
+            </div>
+        </div>
+
+        <!-- Repuestos -->
+        <div class="metric-card">
+            <div class="metric-icon repuestos">
+            <i class="fas fa-cogs"></i>
+            </div>
+            <div class="metric-content">
+            <h3 id="totalRepuestos">0</h3>
+            <p>Total Repuestos</p>
+            </div>
+        </div>
+
+        <!-- Empleados -->
+        <div class="metric-card">
+            <div class="metric-icon empleados">
+            <i class="fas fa-user-tie"></i>
+            </div>
+            <div class="metric-content">
+            <h3 id="totalEmpleados">0</h3>
+            <p>Total Empleados</p>
+            </div>
+        </div>
+
+        <!-- Stock Total -->
+        <div class="metric-card">
+            <div class="metric-icon stock">
+            <i class="fas fa-boxes"></i>
+            </div>
+            <div class="metric-content">
+            <h3 id="totalStock">0</h3>
+            <p>Unidades en Stock</p>
+            </div>
+        </div>
+
+        <!-- Valor Inventario -->
+        <div class="metric-card">
+            <div class="metric-icon inventario">
+            <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="metric-content">
+            <h3 id="valorInventario">$0</h3>
+            <p>Valor del Inventario</p>
+            </div>
+        </div>
+        </div>
+
+        <!-- Estadísticas Detalladas -->
+        <div class="stats-container">
+        <!-- Distribución de Empleados por Rol -->
+        <div class="stat-section">
+            <h3>👥 Distribución de Empleados</h3>
+            <div class="roles-grid" id="rolesStats">
+            <!-- Se llenará dinámicamente -->
+            <div class="loading">Cargando estadísticas...</div>
+            </div>
+        </div>
+
+        <!-- Estado del Stock -->
+        <div class="stat-section">
+            <h3>📦 Estado del Inventario</h3>
+            <div class="stock-stats" id="stockStats">
+            <div class="stock-item">
+                <span class="stock-label">Stock Bajo (< 10 unidades)</span>
+                <span class="stock-value warning" id="stockBajo">0</span>
+            </div>
+            <div class="stock-item">
+                <span class="stock-label">Stock Crítico (< 5 unidades)</span>
+                <span class="stock-value danger" id="stockCritico">0</span>
+            </div>
+            <div class="stock-item">
+                <span class="stock-label">Sin Stock</span>
+                <span class="stock-value danger" id="stockAgotado">0</span>
+            </div>
+            </div>
+        </div>
+
+        <!-- Métricas Adicionales -->
+        <div class="stat-section">
+            <h3>📊 Métricas Adicionales</h3>
+            <div class="additional-stats">
+            <div class="additional-item">
+                <span class="additional-label">Órdenes Pendientes</span>
+                <span class="additional-value" id="ordenesPendientes">0</span>
+            </div>
+            <div class="additional-item">
+                <span class="additional-label">Órdenes Completadas</span>
+                <span class="additional-value success" id="ordenesCompletadas">0</span>
+            </div>
+            <div class="additional-item">
+                <span class="additional-label">Facturas Emitidas</span>
+                <span class="additional-value" id="totalFacturas">0</span>
+            </div>
+            </div>
+        </div>
+        </div>
+    </section>
+    <!-- Clientes -->
+     <!-- ===== CLIENTES ===== -->
+    <section id="clientes" class="section">
+        <div class="header-row">
+            <h2>Gestión de Clientes</h2>
+            <div class="button-group right">
+                <button id="btnAgregarCliente" class="btn btn-blue">Crear</button>
+                <button id="btnEditarCliente" class="btn btn-green">Editar</button>
+                <button id="btnEliminarCliente" class="btn btn-red">Eliminar</button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table id="tablaClientes" class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                        <th>VIN / Placa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filas dinámicas -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ===== VEHÍCULOS ===== -->
+    <section id="carros" class="section">
+        <div class="header-row">
+            <h2>Gestión de Vehículos</h2>
+            <div class="button-group right">
+                <button id="btnAgregarVehiculo" class="btn btn-blue">Crear</button>
+                <button id="btnEditarVehiculo" class="btn btn-green">Editar</button>
+                <button id="btnEliminarVehiculo" class="btn btn-red">Eliminar</button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table id="tablaVehiculos" class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>VIN / Placa</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Año</th>
+                        <th>Kilometraje</th>
+                        <th>Cliente</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filas dinámicas -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ===== REPUESTOS ===== -->
+    <section id="repuestos" class="section">
+        <div class="header-row">
+            <h2>Gestión de Repuestos</h2>
+            <div class="button-group right">
+                <button id="btnAgregarRepuesto" class="btn btn-blue">Crear</button>
+                <button id="btnEditarRepuesto" class="btn btn-green">Editar</button>
+                <button id="btnEliminarRepuesto" class="btn btn-red">Eliminar</button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table id="tablaRepuestos" class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Código</th>
+                        <th>Descripción</th>
+                        <th>Precio Unidad</th>
+                        <th>Cantidad Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filas dinámicas -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ===== EMPLEADOS ===== -->
+    <section id="empleados" class="section">
+        <div class="header-row">
+            <h2>Gestión de Empleados</h2>
+            <div class="button-group right">
+                <button id="btnAgregarEmpleado" class="btn btn-blue">Crear</button>
+                <button id="btnEditarEmpleado" class="btn btn-green">Editar</button>
+                <button id="btnEliminarEmpleado" class="btn btn-red">Eliminar</button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table id="tablaEmpleados" class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filas dinámicas -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ===== MODALES CLIENTES ===== -->
+    <div id="modalCrearCliente" class="modal">
+        <div class="modal-content">
+            <h3>Registrar Cliente y Vehículo</h3>
+            <form id="formCrearCliente">
+                <h4>Datos del Cliente</h4>
+                <input type="text" id="clienteCrearNombre" placeholder="Nombre completo" required>
+                <input type="text" id="clienteCrearTelefono" placeholder="Teléfono" required>
+                <input type="email" id="clienteCrearEmail" placeholder="Email" required>
+                <h4>Datos del Vehículo</h4>
+                <input type="text" id="clienteCrearPlaca" placeholder="VIN o Placa" required>
+                <input type="text" id="clienteCrearMarca" placeholder="Marca" required>
+                <input type="number" id="clienteCrearAno" placeholder="Año" required>
+                <input type="text" id="clienteCrearModelo" placeholder="Modelo" required>
+                <input type="number" id="clienteCrearKilometraje" placeholder="Kilometraje" step="0.1" required>
+                <button type="submit" class="btn btn-blue">Guardar</button>
+                <button type="button" class="btn btn-gray" id="clienteCerrarCrear">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalEditarCliente" class="modal">
+        <div class="modal-content">
+            <h3>Editar Cliente</h3>
+            <form id="formEditarCliente">
+                <input type="text" id="clienteEditarId" placeholder="ID del cliente" required>
+                <input type="text" id="clienteEditarNombre" placeholder="Nuevo nombre">
+                <input type="text" id="clienteEditarTelefono" placeholder="Nuevo teléfono">
+                <input type="email" id="clienteEditarEmail" placeholder="Nuevo email">
+                <button type="submit" class="btn btn-green">Actualizar</button>
+                <button type="button" class="btn btn-gray" id="clienteCerrarEditar">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalEliminarCliente" class="modal">
+        <div class="modal-content">
+            <h3>Eliminar Cliente</h3>
+            <form id="formEliminarCliente">
+                <input type="text" id="clienteEliminarId" placeholder="ID del cliente" required>
+                <button type="submit" class="btn btn-red">Eliminar</button>
+                <button type="button" class="btn btn-gray" id="clienteCerrarEliminar">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MODALES VEHÍCULOS ===== -->
+    <div id="modalCrearVehiculo" class="modal">
+        <div class="modal-content">
+            <h3>Registrar Vehículo</h3>
+            <form id="formCrearVehiculo">
+                <h4>Datos del Vehículo</h4>
+                <input type="text" id="vehiculoCrearPlaca" placeholder="VIN o Placa" required>
+                <input type="text" id="vehiculoCrearMarca" placeholder="Marca" required>
+                <input type="text" id="vehiculoCrearModelo" placeholder="Modelo" required>
+                <input type="number" id="vehiculoCrearAno" placeholder="Año" required>
+                <input type="number" id="vehiculoCrearKilometraje" placeholder="Kilometraje" step="0.1" required>
+                <input type="text" id="vehiculoCrearClienteId" placeholder="ID del Cliente" required>
+                <button type="submit" class="btn btn-blue">Guardar</button>
+                <button type="button" class="btn btn-gray" id="vehiculoCerrarCrear">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalEditarVehiculo" class="modal">
+        <div class="modal-content">
+            <h3>Editar Vehículo</h3>
+            <form id="formEditarVehiculo">
+                <input type="text" id="vehiculoEditarId" placeholder="ID del Vehículo" required>
+                <input type="text" id="vehiculoEditarPlaca" placeholder="VIN o Placa" required>
+                <input type="text" id="vehiculoEditarMarca" placeholder="Marca" required>
+                <input type="text" id="vehiculoEditarModelo" placeholder="Modelo" required>
+                <input type="number" id="vehiculoEditarAno" placeholder="Año" required>
+                <input type="number" id="vehiculoEditarKilometraje" placeholder="Kilometraje" step="0.1" required>
+                <button type="submit" class="btn btn-green">Actualizar</button>
+                <button type="button" class="btn btn-gray" id="vehiculoCerrarEditar">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalEliminarVehiculo" class="modal">
+        <div class="modal-content">
+            <h3>Eliminar Vehículo</h3>
+            <form id="formEliminarVehiculo">
+                <input type="text" id="vehiculoEliminarId" placeholder="ID del Vehículo" required>
+                <button type="submit" class="btn btn-red">Eliminar</button>
+                <button type="button" class="btn btn-gray" id="vehiculoCerrarEliminar">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MODALES REPUESTOS ===== -->
+    <div id="modalCrearRepuesto" class="modal">
+        <div class="modal-content">
+            <h3>Registrar Repuesto</h3>
+            <form id="formCrearRepuesto">
+                <h4>Datos del Repuesto</h4>
+                <input type="text" id="repuestoCrearCodigo" placeholder="Código" required>
+                <input type="text" id="repuestoCrearDescripcion" placeholder="Descripción" required>
+                <input type="number" id="repuestoCrearStock" placeholder="Stock" required>
+                <input type="number" id="repuestoCrearPrecioU" placeholder="Precio Unidad" step="0.1" required>
+                <button type="submit" class="btn btn-blue">Guardar</button>
+                <button type="button" class="btn btn-gray" id="repuestoCerrarCrear">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalEditarRepuesto" class="modal">
+        <div class="modal-content">
+            <h3>Editar Repuesto</h3>
+            <form id="formEditarRepuesto">
+                <input type="text" id="repuestoEditarId" placeholder="ID del Repuesto" required>
+                <input type="text" id="repuestoEditarCodigo" placeholder="Código" required>
+                <input type="text" id="repuestoEditarDescripcion" placeholder="Descripción" required>
+                <input type="number" id="repuestoEditarStock" placeholder="Stock" required>
+                <input type="number" id="repuestoEditarPrecioU" placeholder="Precio Unidad" step="0.1" required>
+                <button type="submit" class="btn btn-green">Actualizar</button>
+                <button type="button" class="btn btn-gray" id="repuestoCerrarEditar">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalEliminarRepuesto" class="modal">
+        <div class="modal-content">
+            <h3>Eliminar Repuesto</h3>
+            <form id="formEliminarRepuesto">
+                <input type="text" id="repuestoEliminarId" placeholder="ID del Repuesto" required>
+                <button type="submit" class="btn btn-red">Eliminar</button>
+                <button type="button" class="btn btn-gray" id="repuestoCerrarEliminar">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MODALES EMPLEADOS ===== -->
+    <div id="modalCrearEmpleado" class="modal">
+        <div class="modal-content">
+            <h3>Registrar Empleado</h3>
+            <form id="formCrearEmpleado">
+                <h4>Datos del Empleado</h4>
+                <input type="text" id="empleadoCrearUsuario" placeholder="Usuario" required>
+                <input type="email" id="empleadoCrearEmail" placeholder="Email" required>
+                <input type="password" id="empleadoCrearPassword" placeholder="Contraseña" required>
+                <input type="text" id="empleadoCrearRol" placeholder="Rol" required>
+                <button type="submit" class="btn btn-blue">Guardar</button>
+                <button type="button" class="btn btn-gray" id="empleadoCerrarCrear">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalEditarEmpleado" class="modal">
+        <div class="modal-content">
+            <h3>Editar Empleado</h3>
+            <form id="formEditarEmpleado">
+                <input type="number" id="empleadoEditarId" placeholder="ID del Empleado" required>
+                <input type="text" id="empleadoEditarUsuario" placeholder="Usuario" required>
+                <input type="email" id="empleadoEditarEmail" placeholder="Email" required>
+                <input type="password" id="empleadoEditarPassword" placeholder="Contraseña" required>
+                <input type="text" id="empleadoEditarRol" placeholder="Rol" required>
+                <button type="submit" class="btn btn-green">Actualizar</button>
+                <button type="button" class="btn btn-gray" id="empleadoCerrarEditar">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalEliminarEmpleado" class="modal">
+        <div class="modal-content">
+            <h3>Eliminar Empleado</h3>
+            <form id="formEliminarEmpleado">
+                <input type="number" id="empleadoEliminarId" placeholder="ID del Empleado" required>
+                <button type="submit" class="btn btn-red">Eliminar</button>
+                <button type="button" class="btn btn-gray" id="empleadoCerrarEliminar">Cancelar</button>
+            </form>
+        </div>
+    </div>
+  </main>
+
+    <script type="module">
+        // 🔐 Verificar que el usuario sea ADMIN
+        const role = localStorage.getItem("role");
+        const name = localStorage.getItem("username");
+
+        console.log("🔐 Verificando permisos...", { role, name });
+
+        if (!role || role !== "admin") {
+            alert("Acceso denegado. Solo los administradores pueden acceder.");
+            window.location.href = "index.html";
+        }
+
+        // 📋 Actualizar nombre del admin
+        const adminNameElement = document.getElementById("adminName");
+        if (adminNameElement) {
+            adminNameElement.textContent = name || "Administrador";
+        }
+
+        // 📑 Navegación - VERSIÓN CORREGIDA
+        function inicializarNavegacion() {
+            const links = document.querySelectorAll(".nav-link");
+            const sections = document.querySelectorAll(".section");
+
+            console.log(`🔗 Encontrados ${links.length} enlaces de navegación`);
+            console.log(`📂 Encontradas ${sections.length} secciones`);
+
+            // Función para cambiar sección
+            function cambiarSeccion(seccionId) {
+                console.log(`🔄 Cambiando a sección: ${seccionId}`);
+                
+                // Remover activo de todos los enlaces
+                links.forEach(link => {
+                    link.classList.remove("active");
+                });
+
+                // Ocultar todas las secciones
+                sections.forEach(section => {
+                    section.classList.remove("active");
+                });
+
+                // Activar enlace y sección correspondiente
+                const linkActivo = document.querySelector(`[data-section="${seccionId}"]`);
+                const seccionActiva = document.getElementById(seccionId);
+
+                if (linkActivo && seccionActiva) {
+                    linkActivo.classList.add("active");
+                    seccionActiva.classList.add("active");
+                    console.log(`✅ Sección ${seccionId} activada`);
+                    
+                    // Forzar reflow para asegurar la animación
+                    seccionActiva.offsetHeight;
+                } else {
+                    console.error(`❌ No se encontró la sección: ${seccionId}`);
+                }
+            }
+
+            // Agregar event listeners a los enlaces
+            links.forEach(link => {
+                link.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    const seccionId = this.getAttribute("data-section");
+                    console.log(`🎯 Clic en: ${seccionId}`);
+                    cambiarSeccion(seccionId);
+                });
+            });
+
+            // Activar la sección inicial (inicio)
+            cambiarSeccion("inicio");
+        }
+
+        // 🚪 Cerrar sesión - VERSIÓN CORREGIDA
+        function inicializarCerrarSesion() {
+            const logoutBtn = document.getElementById("logoutBtn");
+            
+            if (logoutBtn) {
+                logoutBtn.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    console.log("🚪 Cerrando sesión...");
+                    
+                    if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+                        localStorage.clear();
+                        window.location.href = "index.html";
+                    }
+                });
+            } else {
+                console.error("❌ No se encontró el botón de cerrar sesión");
+            }
+        }
+
+        // 🎯 Inicializar cuando el DOM esté listo
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("🚀 Inicializando panel de administración...");
+            
+            inicializarNavegacion();
+            inicializarCerrarSesion();
+            
+            console.log("✅ Panel de administración inicializado correctamente");
+        });
+
+        // 🔄 También inicializar si la página ya está cargada
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', inicializarNavegacion);
+        } else {
+            inicializarNavegacion();
+        }
+    </script>
+
+  <script type="module" src="js/clientes.js"></script>
+  <script type="module" src="js/vehiculos.js"></script>
+  <script type="module" src="js/repuestos.js"></script>
+  <script type="module" src="js/empleados.js"></script>
+  <script type="module" src="js/dashboard.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/recepcionista.css">
+  <title>Panel de Recepcionista | AutoTaller Manager</title>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2 class="brand">
+      <span>AutoTaller</span><span>Manager</span> <span>Recepción</span>
+    </h2>
+    <nav>
+      <a href="#" class="nav-link active" data-section="inicio"> Inicio</a>
+      <a href="#" class="nav-link" data-section="clientes"> Clientes</a>
+      <a href="#" class="nav-link" data-section="vehiculos"> Vehículos</a>
+      <a href="#" class="nav-link" data-section="ordenes"> Órdenes</a>
+      <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <h1>Panel de Recepcionista</h1>
+    
+    <!-- Dashboard -->
+    <section id="inicio" class="section active">
+        <div class="header-row">
+          <h2>Dashboard de Recepción</h2>
+          <p id="fechaActual" style="color: #6b7280; font-size: 1rem;"></p>
+        </div>
+
+        <!-- Tarjetas de Métricas Principales -->
+        <div class="metrics-grid">
+          <!-- Órdenes del Día -->
+          <div class="metric-card">
+            <div class="metric-icon ordenes-dia">
+              <i class="fas fa-calendar-day"></i>
+            </div>
+            <div class="metric-content">
+              <h3 id="totalOrdenesDia">0</h3>
+              <p>Órdenes Hoy</p>
+            </div>
+          </div>
+
+          <!-- Órdenes Pendientes -->
+          <div class="metric-card">
+            <div class="metric-icon ordenes-pendientes">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="metric-content">
+              <h3 id="totalPendientes">0</h3>
+              <p>Órdenes Pendientes</p>
+            </div>
+          </div>
+
+          <!-- Órdenes en Proceso -->
+          <div class="metric-card">
+            <div class="metric-icon ordenes-proceso">
+              <i class="fas fa-tools"></i>
+            </div>
+            <div class="metric-content">
+              <h3 id="totalProceso">0</h3>
+              <p>Órdenes en Proceso</p>
+            </div>
+          </div>
+
+          <!-- Clientes Registrados -->
+          <div class="metric-card">
+            <div class="metric-icon clientes">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="metric-content">
+              <h3 id="totalClientes">0</h3>
+              <p>Total Clientes</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estadísticas Detalladas -->
+        <div class="stats-container">
+          <!-- Órdenes por Estado -->
+          <div class="stat-section">
+            <h3>📊 Estado de Órdenes</h3>
+            <div class="additional-stats">
+              <div class="additional-item">
+                <span class="additional-label">Pendientes</span>
+                <span class="additional-value warning" id="ordenesPendientes">0</span>
+              </div>
+              <div class="additional-item">
+                <span class="additional-label">En Proceso</span>
+                <span class="additional-value info" id="ordenesProceso">0</span>
+              </div>
+              <div class="additional-item">
+                <span class="additional-label">Completadas</span>
+                <span class="additional-value success" id="ordenesCompletadas">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Órdenes Recientes -->
+          <div class="stat-section">
+            <h3>🕒 Órdenes Recientes</h3>
+            <div class="recent-orders" id="recentOrders">
+              <div class="loading">Cargando órdenes recientes...</div>
+            </div>
+          </div>
+        </div>
+    </section>
+
+    <!-- ===== CLIENTES ===== -->
+    <section id="clientes" class="section">
+        <div class="header-row">
+            <h2>Consulta de Clientes</h2>
+            <div class="search-container">
+                <input type="text" id="buscarCliente" placeholder="Buscar cliente por nombre, teléfono o email...">
+                <button class="btn btn-blue" id="btnBuscarCliente">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table id="tablaClientes" class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                        <th>Vehículos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filas dinámicas -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ===== VEHÍCULOS ===== -->
+    <section id="vehiculos" class="section">
+        <div class="header-row">
+            <h2>Consulta de Vehículos</h2>
+            <div class="search-container">
+                <input type="text" id="buscarVehiculo" placeholder="Buscar vehículo por placa, marca o modelo...">
+                <button class="btn btn-blue" id="btnBuscarVehiculo">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table id="tablaVehiculos" class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>VIN / Placa</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Año</th>
+                        <th>Kilometraje</th>
+                        <th>Cliente</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filas dinámicas -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ===== ÓRDENES ===== -->
+    <section id="ordenes" class="section">
+        <div class="header-row">
+            <h2>Gestión de Órdenes de Servicio</h2>
+            <div class="button-group right">
+                <button id="btnCrearOrden" class="btn btn-blue">Crear Orden</button>
+            </div>
+        </div>
+        
+        <!-- Filtros de Órdenes -->
+        <div class="filters-row">
+            <div class="filter-group">
+                <label for="filterEstado">Estado:</label>
+                <select id="filterEstado">
+                    <option value="all">Todos</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="EnProceso">En Proceso</option>
+                    <option value="Completado">Completado</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filterFecha">Fecha:</label>
+                <input type="date" id="filterFecha">
+            </div>
+            <button id="btnAplicarFiltros" class="btn btn-green">Aplicar Filtros</button>
+            <button id="btnLimpiarFiltros" class="btn btn-gray">Limpiar</button>
+        </div>
+
+        <div class="table-container">
+            <table id="tablaOrdenes" class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Vehículo</th>
+                        <th>Cliente</th>
+                        <th>Servicio</th>
+                        <th>Fecha Entrada</th>
+                        <th>Estado</th>
+                        <th>Mecánico</th>
+                        <th>Costo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filas dinámicas -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <!-- ===== MODAL CREAR ORDEN ===== -->
+    <div id="modalCrearOrden" class="modal">
+        <div class="modal-content large">
+            <h3>Crear Orden de Servicio</h3>
+            <form id="formCrearOrden">
+                <div class="form-columns">
+                    <div class="form-column">
+                        <h4>Información del Cliente y Vehículo</h4>
+                        
+                        <div class="form-group">
+                            <label for="ordenClienteId">Cliente:</label>
+                            <select id="ordenClienteId" required>
+                                <option value="">Seleccionar cliente...</option>
+                                <!-- Opciones se llenarán dinámicamente -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ordenVehiculoId">Vehículo:</label>
+                            <select id="ordenVehiculoId" required>
+                                <option value="">Seleccionar vehículo...</option>
+                                <!-- Opciones se llenarán dinámicamente -->
+                            </select>
+                        </div>
+                        
+                        <div class="vehicle-info" id="vehicleInfo">
+                            <!-- Información del vehículo se mostrará aquí -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-column">
+                        <h4>Detalles del Servicio</h4>
+                        
+                        <div class="form-group">
+                            <label for="ordenMecanicoId">Mecánico Asignado:</label>
+                            <select id="ordenMecanicoId" required>
+                                <option value="">Seleccionar mecánico...</option>
+                                <!-- Opciones se llenarán dinámicamente -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ordenTipoServicio">Tipo de Servicio:</label>
+                            <select id="ordenTipoServicio" required>
+                                <option value="">Seleccionar servicio...</option>
+                                <option value="1">Mantenimiento Preventivo</option>
+                                <option value="2">Reparación</option>
+                                <option value="3">Diagnóstico</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ordenFechaEntrega">Fecha Estimada de Entrega:</label>
+                            <input type="date" id="ordenFechaEntrega" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h4>Repuestos y Servicios Adicionales</h4>
+                    <div class="repuestos-container">
+                        <!-- Las líneas de repuestos se agregarán aquí dinámicamente -->
+                    </div>
+                    <button type="button" id="btnAgregarRepuesto" class="btn btn-small btn-blue">+ Agregar Repuesto</button>
+                    
+                    <div class="orden-total">
+                        <strong>Total Estimado: $<span id="ordenTotal">0.00</span></strong>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-green">Crear Orden</button>
+                    <button type="button" class="btn btn-gray" id="ordenCerrarCrear">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Template oculto para repuestos -->
+    <div id="repuestoTemplate" class="repuesto-item" style="display: none;">
+        <select class="repuesto-select">
+            <option value="">Seleccionar repuesto...</option>
+        </select>
+        <input type="number" class="repuesto-cantidad" min="1" value="1" placeholder="Cantidad">
+        <span class="repuesto-precio">$0.00</span> <!-- Solo para mostrar -->
+        <span class="repuesto-subtotal">$0.00</span>
+        <span class="repuesto-stock" style="font-size: 0.8em; color: #666;">Stock: 0</span>
+        <span class="repuesto-code" style="font-size: 0.8em;"></span>
+        <button type="button" class="btn btn-small btn-red quitar-repuesto">X</button>
+    </div>
+  </main>
+  <script type="module" src="js/recepcionista.js"></script>
+</body>
+</html>

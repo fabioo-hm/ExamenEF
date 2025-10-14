@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Api.DTOs.ServiceOrders;
 using Application.Abstractions;
+using Application.DTOs.ServiceOrders;
 using Application.ServiceOrders;
 using Domain.Entities;
 using MediatR;
@@ -24,19 +25,39 @@ public class ServiceOrdersController : BaseApiController
 
     // ✅ POST: api/serviceorders
     [HttpPost]
-    public async Task<ActionResult<Guid>> Create([FromBody] CreateServiceOrderDto dto, CancellationToken ct)
+    public async Task<IActionResult> Create([FromBody] CreateServiceOrderDto dto, CancellationToken ct = default)
     {
-        var command = new CreateServiceOrderDto(
+        // Puedes agregar validaciones personalizadas si quieres:
+        if (dto.VehicleId == Guid.Empty)
+            return BadRequest(new { Message = "El ID del vehículo es obligatorio." });
+
+        if (dto.UserMemberId <= 0)
+            return BadRequest(new { Message = "El ID del mecánico es obligatorio." });
+
+        // Crear entidad desde el DTO
+        var serviceOrder = new ServiceOrder(
             dto.VehicleId,
             dto.ServiceType,
             dto.UserMemberId,
-            dto.EstimatedDeliveryDate,
             dto.EntryDate,
+            dto.EstimatedDeliveryDate,
             dto.OrderStatus
         );
 
-        var id = await _mediator.Send(command, ct);
-        return CreatedAtAction(nameof(GetById), new { id }, id);
+        await _repo.AddAsync(serviceOrder, ct);
+
+        // Opcional: devolver DTO creado
+        var created = new ServiceOrderDto(
+            serviceOrder.Id,
+            serviceOrder.VehicleId,
+            serviceOrder.ServiceType,
+            serviceOrder.UserMemberId,
+            serviceOrder.EntryDate,
+            serviceOrder.EstimatedDeliveryDate,
+            serviceOrder.OrderStatus
+        );
+
+        return CreatedAtAction(nameof(GetById), new { id = serviceOrder.Id }, created);
     }
 
     // ✅ GET: api/serviceorders/all
@@ -86,8 +107,8 @@ public class ServiceOrdersController : BaseApiController
         if (existing is null)
             return NotFound();
 
-        // Actualizamos campos usando métodos o constructor nuevo
-        var updated = new ServiceOrder(
+        // Actualizar la entidad existente en lugar de crear una nueva
+        existing.Update(
             dto.VehicleId,
             dto.ServiceType,
             dto.UserMemberId,
@@ -96,12 +117,7 @@ public class ServiceOrdersController : BaseApiController
             dto.OrderStatus
         );
 
-        // Reasignamos el ID existente
-        typeof(ServiceOrder)
-            .GetProperty(nameof(ServiceOrder.Id))!
-            .SetValue(updated, id);
-
-        await _repo.UpdateAsync(updated, ct);
+        await _repo.UpdateAsync(existing, ct);
         return NoContent();
     }
 
@@ -114,6 +130,20 @@ public class ServiceOrdersController : BaseApiController
             return NotFound();
 
         await _repo.RemoveAsync(existing, ct);
+        return NoContent();
+    }
+
+    [HttpPatch("{id:guid}/status")]
+    public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateServiceOrderStatusDto dto, CancellationToken ct)
+    {
+        var existing = await _repo.GetByIdAsync(id, ct);
+        if (existing is null)
+            return NotFound();
+
+        // Actualizar solo el estado
+        existing.UpdateStatus(dto.OrderStatus);
+
+        await _repo.UpdateAsync(existing, ct);
         return NoContent();
     }
 }

@@ -1,0 +1,287 @@
+.badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.estado-pendiente {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.estado-enproceso {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+}
+
+.estado-completado {
+    background-color: #f0fdf4;
+    color: #16a34a;
+}
+
+.metric-icon.ordenes-dia { background: #3b82f6; }
+.metric-icon.ordenes-pendientes { background: #f59e0b; }
+.metric-icon.ordenes-proceso { background: #8b5cf6; }
+.metric-icon.clientes { background: #10b981; }
+
+.warning { background: #fef3c7; color: #d97706; }
+.info { background: #dbeafe; color: #1d4ed8; }
+.success { background: #f0fdf4; color: #16a34a; }
+
+.search-container {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.search-container input {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    width: 300px;
+}
+
+.filters-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: #374151;
+}
+
+.filter-group select,
+.filter-group input {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+}
+
+.recent-orders {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.recent-order-item {
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+}
+
+.recent-order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.order-id {
+    font-weight: bold;
+    color: #1e3a8a;
+}
+
+.recent-order-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    color: #374151;
+}
+
+.recent-order-date {
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.no-data {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 1rem;
+}
+
+/* Estilos para modal de orden */
+.modal-content.large {
+    width: 700px;
+    max-width: 95%;
+}
+
+.form-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-column h4 {
+    margin-bottom: 1rem;
+    color: #d1d5db;
+    border-bottom: 1px solid #4b5563;
+    padding-bottom: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #d1d5db;
+    font-weight: 500;
+}
+
+.form-group select,
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.7rem;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    background: #374151;
+    color: white;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.vehicle-info {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #374151;
+    border-radius: 6px;
+}
+
+.vehicle-details p {
+    margin: 0.25rem 0;
+    color: #FFFFFF;
+}
+
+.form-section {
+    margin-bottom: 1.5rem;
+}
+
+.form-section h4 {
+    margin-bottom: 1rem;
+    color: #d1d5db;
+    border-bottom: 1px solid #4b5563;
+    padding-bottom: 0.5rem;
+}
+
+.repuestos-container {
+    margin-bottom: 1rem;
+}
+
+.repuesto-item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background: #374151;
+    border-radius: 6px;
+}
+
+.repuesto-select {
+    flex: 2;
+}
+
+.repuesto-precio,
+.repuesto-subtotal {
+    flex: 1;
+    text-align: center;
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+
+.orden-total {
+    text-align: right;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #4b5563;
+    font-size: 1.2rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.btn-small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+}
+/* Estilos para repuestos en el modal */
+.repuestos-container {
+    margin-bottom: 1rem;
+    border: 1px solid #374151;
+    border-radius: 6px;
+    padding: 1rem;
+    background: #1f2937;
+}
+
+.repuesto-item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background: #374151;
+    border-radius: 6px;
+}
+
+.repuesto-select {
+    flex: 2;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #4b5563;
+    background: #1f2937;
+    color: white;
+}
+
+.repuesto-cantidad {
+    flex: 1;
+    max-width: 80px;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #4b5563;
+    color: white;
+}
+
+.repuesto-precio,
+.repuesto-subtotal {
+    flex: 1;
+    text-align: center;
+    font-weight: bold;
+    min-width: 80px;
+}
+
+.quitar-repuesto {
+    flex: 0 0 100px;
+    padding: 0.25rem 0.5rem;
+}
+
+.orden-total {
+    text-align: right;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #4b5563;
+    font-size: 1.2rem;
+}

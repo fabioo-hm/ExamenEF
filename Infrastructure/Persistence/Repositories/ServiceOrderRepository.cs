@@ -126,10 +126,18 @@ public class ServiceOrderRepository : IServiceOrderRepository
         return await query.CountAsync(ct);
     }
 
-    public async Task AddAsync(ServiceOrder order, CancellationToken ct = default)
+    public async Task AddAsync(ServiceOrder order, CancellationToken ct)
     {
-        await _context.ServiceOrders.AddAsync(order, ct);
-        await _context.SaveChangesAsync(ct);
+        try
+        {
+            await _context.ServiceOrders.AddAsync(order, ct);
+            await _context.SaveChangesAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Error al guardar la orden: {ex.InnerException?.Message}");
+            throw;
+        }
     }
 
     public async Task UpdateAsync(ServiceOrder order, CancellationToken ct = default)

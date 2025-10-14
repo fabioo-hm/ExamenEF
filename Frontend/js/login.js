@@ -1,5 +1,11 @@
 import { API_URL } from "./config.js";
 
+const ROLE_REDIRECT = {
+  admin: "admin.html",
+  recepcionista: "receptionist.html",
+  mecanico: "mechanic.html"
+};
+
 document.getElementById("loginForm").addEventListener("submit", async function (event) {
     event.preventDefault();
 
@@ -25,16 +31,25 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
         const data = await response.json();
 
-        // Guarda el token (ajusta según tu respuesta real del backend)
-        const token = data.token || data.accessToken || null;
+        // ✅ Guardar token y refresh token
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("refreshToken", data.refreshToken);
+        localStorage.setItem("username", data.userName);
 
-        if (token) {
-            localStorage.setItem("token", token);
-            alert("Login exitoso 🎉 Bienvenido " + (data.userName || username));
-            window.location.href = "main.html";
-        } else {
-            alert("No se recibió token. Verifica el backend.");
+        // ✅ Si tu backend devuelve roles como array
+        const roles = data.roles || [];
+        if (roles.length === 0) {
+        alert("No se detectó ningún rol para este usuario.");
+        return;
         }
+
+        const role = roles[0].toLowerCase();
+        localStorage.setItem("role", role);
+
+        // ✅ Redirigir según el rol
+        const redirectPage = ROLE_REDIRECT[role] || "login.html";
+        alert(`Bienvenido ${data.userName} (${role})`);
+        window.location.href = redirectPage;
 
     } catch (error) {
         alert("Error al iniciar sesión: " + error.message);

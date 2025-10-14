@@ -20,4 +20,5 @@ public interface IUserMemberService
     Task<UserMember?> GetByUserNameAsync(string userName,CancellationToken ct = default);
 
     Task<UserMember> GetByRefreshTokenAsync(string refreshToken);
+    IQueryable<UserMember> GetAllWithRoles();
 }

@@ -57,4 +57,33 @@ public class AuthController : BaseApiController
 
         return Ok(result);
     }
+    // GET all users
+    [HttpGet("users")]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var users = await _userService.GetAllUsersAsync();
+        return Ok(users);
+    }
+
+    // PUT update user (id = GUID)
+    [HttpPut("users/{id:int}")]
+    public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto dto)
+    {
+        var result = await _userService.UpdateUserAsync(id, dto);
+        if (!result.Success)
+            return BadRequest(new { message = result.Message });
+
+        return Ok(new { message = result.Message });
+    }
+
+    // DELETE user
+    [HttpDelete("users/{id:int}")]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+        var result = await _userService.DeleteUserAsync(id);
+        if (!result.Success)
+            return BadRequest(new { message = result.Message });
+
+        return Ok(new { message = result.Message });
+    }
 }

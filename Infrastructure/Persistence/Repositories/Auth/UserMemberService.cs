@@ -123,4 +123,12 @@ public class UserMemberService : IUserMemberService
             .FirstOrDefaultAsync(u =>
                 u.RefreshTokens.Any(rt => rt.Token == refreshToken));
     }
+    public IQueryable<UserMember> GetAllWithRoles()
+    {
+        return _context.UserMembers
+            .Include(u => u.UserMemberRols)
+                .ThenInclude(ur => ur.Rol)
+            .AsQueryable();
+    }
+
 }

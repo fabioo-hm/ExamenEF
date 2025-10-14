@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/admin.css">
+  <title>Panel de Mecánico | AutoTaller Manager</title>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2 class="brand">
+      <span>AutoTaller</span><span>Manager</span> <span>Mecánico</span>
+    </h2>
+    <nav>
+      <a href="#" class="nav-link active" data-section="ordenes">Órdenes Asignadas</a>
+      <a href="#" class="nav-link" data-section="facturas">Generar Facturas</a>
+      <a href="#" class="nav-link" data-section="todas-facturas">Todas las Facturas</a>
+      <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+    </nav>
+    <div class="user-info">
+      <span id="mechanicName">Mecánico</span>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <h1>Panel de Mecánico</h1>
+    
+    <!-- Sección de Órdenes Asignadas -->
+    <section id="ordenes" class="section active">
+        <div class="header-row">
+          <h2>Órdenes de Servicio Asignadas</h2>
+          <p id="fechaActual" style="color: #6b7280; font-size: 1rem;"></p>
+        </div>
+
+        <!-- Tarjetas de Métricas para Mecánico -->
+        <div class="metrics-grid">
+          <!-- Órdenes Pendientes -->
+          <div class="metric-card">
+            <div class="metric-icon pendientes">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="metric-content">
+              <h3 id="totalPendientes">0</h3>
+              <p>Órdenes Pendientes</p>
+            </div>
+          </div>
+
+          <!-- Órdenes en Proceso -->
+          <div class="metric-card">
+            <div class="metric-icon proceso">
+              <i class="fas fa-tools"></i>
+            </div>
+            <div class="metric-content">
+              <h3 id="totalProceso">0</h3>
+              <p>Órdenes en Proceso</p>
+            </div>
+          </div>
+
+          <!-- Órdenes Completadas -->
+          <div class="metric-card">
+            <div class="metric-icon completadas">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="metric-content">
+              <h3 id="totalCompletadas">0</h3>
+              <p>Órdenes Completadas</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de Órdenes -->
+        <div class="table-container">
+          <table id="tablaOrdenes" class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Vehículo</th>
+                <th>Cliente</th>
+                <th>Servicio</th>
+                <th>Fecha Estimada</th>
+                <th>Fecha Entrada</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Filas dinámicas -->
+            </tbody>
+          </table>
+        </div>
+    </section>
+
+    <!-- Sección de Facturas -->
+    <section id="facturas" class="section">
+        <div class="header-row">
+          <h2>Generar Facturas</h2>
+        </div>
+
+        <div class="table-container">
+          <table id="tablaFacturas" class="data-table">
+            <thead>
+              <tr>
+                <th>ID Orden</th>
+                <th>Vehículo</th>
+                <th>Cliente</th>
+                <th>Servicios</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Filas dinámicas -->
+            </tbody>
+          </table>
+        </div>
+    </section>
+    <section id="todas-facturas" class="section">
+        <div class="header-row">
+          <h2>Todas las Facturas</h2>
+          <div class="filtros-facturas">
+            <select id="filtroEstadoFactura">
+              <option value="todas">Todas las facturas</option>
+              <option value="pagadas">Pagadas</option>
+              <option value="pendientes">Pendientes</option>
+            </select>
+            <input type="month" id="filtroMesFactura">
+            <button class="btn btn-small btn-blue" onclick="aplicarFiltrosFacturas()">Aplicar Filtros</button>
+            <button class="btn btn-small btn-gray" onclick="limpiarFiltrosFacturas()">Limpiar</button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table id="tablaTodasFacturas" class="data-table">
+            <thead>
+              <tr>
+                <th>ID Factura</th>
+                <th>Orden</th>
+                <th>Cliente</th>
+                <th>Vehículo</th>
+                <th>Total</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Filas dinámicas -->
+            </tbody>
+          </table>
+        </div>
+    </section>
+    <!-- Modal para Actualizar Estado de Orden -->
+    <div id="modalActualizarOrden" class="modal">
+        <div class="modal-content">
+            <h3>Actualizar Estado de Orden</h3>
+            <form id="formActualizarOrden">
+                <input type="hidden" id="ordenId" />
+                <div class="form-group">
+                    <label for="estadoOrden">Estado:</label>
+                    <select id="estadoOrden" required>
+                        <option value="1">Pendiente</option>
+                        <option value="2">En Proceso</option>
+                        <option value="3">Completado</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-blue">Actualizar Estado</button>
+                <button type="button" class="btn btn-gray" id="cerrarActualizarOrden">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Generar Factura -->
+    <div id="modalGenerarFactura" class="modal">
+        <div class="modal-contentfact">
+            <h3>Generar Factura</h3>
+            <form id="formGenerarFactura">
+                <input type="hidden" id="facturaOrdenId" />
+                <div class="factura-preview">
+                    <h4>Resumen de la Orden</h4>
+                    <div id="facturaDetalles">
+                        <!-- Detalles de la factura se cargarán aquí -->
+                    </div>
+                    <div class="form-group">
+                        <label for="metodoPago">Método de Pago:</label>
+                        <select id="metodoPago" required>
+                            <option value="1">Efectivo</option>
+                            <option value="2">Tarjeta</option>
+                            <option value="3">Transferencia</option>
+                        </select>
+                    </div>
+                    <div class="total-factura">
+                        <strong>Total: $<span id="totalFactura">0.00</span></strong>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-green">Generar Factura</button>
+                <button type="button" class="btn btn-gray" id="cerrarGenerarFactura">Cancelar</button>
+            </form>
+        </div>
+    </div>
+        <div id="modalDetalleFactura" class="modal modal-lg">
+        <div class="modal-contentmec">
+            <h3>Detalle Completo de Factura</h3>
+            <div class="factura-detalle">
+                <!-- Encabezado de la factura -->
+                <div class="factura-header">
+                    <div class="factura-info">
+                        <h4 id="detalleFacturaId">Factura #</h4>
+                        <p id="detalleFacturaFecha">Fecha: </p>
+                        <p id="detalleFacturaEstado">Estado: </p>
+                    </div>
+                    <div class="factura-totales">
+                        <h4 id="detalleFacturaTotal">Total: $0.00</h4>
+                        <p id="detalleFacturaMetodoPago">Método: </p>
+                    </div>
+                </div>
+
+                <!-- Detalles de la orden de servicio -->
+                <div class="info-card">
+                    <h5>Orden de Servicio</h5>
+                    <div id="detalleOrdenInfo">
+                        <!-- Datos de la orden -->
+                    </div>
+                </div>
+
+                <!-- Detalles de repuestos -->
+                <div class="info-card">
+                    <h5>Repuestos Utilizados</h5>
+                    <div id="detalleRepuestosInfo">
+                        <!-- Tabla de repuestos -->
+                    </div>
+                </div>
+
+                <!-- Desglose de costos -->
+                <div class="factura-costos">
+                    <div class="costo-item">
+                        <span>Subtotal Repuestos:</span>
+                        <span id="detalleSubtotalRepuestos">$0.00</span>
+                    </div>
+                    <div class="costo-item">
+                        <span>Mano de Obra:</span>
+                        <span id="detalleManoObra">$0.00</span>
+                    </div>
+                    <div class="costo-item total">
+                        <span><strong>TOTAL:</strong></span>
+                        <span id="detalleTotalFinal">$0.00</span>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-gray" id="cerrarDetalleFactura">Cerrar</button>
+        </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/mecanico.js"></script>
+
+  <style>
+    /* Estilos adicionales para el panel de mecánico */
+    .modal-contentmec {
+        position: relative;
+        background: #1f2937;
+        margin: 5% auto;
+        padding: 2rem;
+        border-radius: 12px;
+        width: 600px;
+        height: fit-content;
+        max-width: 90%;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        animation: modalFadeIn 0.3s;
+        color: #c2c2c2;
+    }
+    .modal-contentfact{
+        position: relative;
+        background: #1f2937;
+        margin: 5% auto;
+        padding: 2rem;
+        border-radius: 12px;
+        width: 400px;
+        height: fit-content;
+        max-width: 90%;
+        box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        animation: modalFadeIn 0.3s;
+        color: #e7e7e7;
+    }
+    .badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    .estado-pendiente {
+        background-color: #fef3c7;
+        color: #d97706;
+    }
+
+    .estado-en-proceso {
+        background-color: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .estado-completado {
+        background-color: #f0fdf4;
+        color: #16a34a;
+    }
+
+    .estado-pagada {
+        background-color: #f0fdf4;
+        color: #16a34a;
+    }
+
+    .estado-pendiente-pago {
+        background-color: #fef3c7;
+        color: #d97706;
+    }
+
+    .metric-icon.pendientes { background: #f59e0b; }
+    .metric-icon.proceso { background: #3b82f6; }
+    .metric-icon.completadas { background: #10b981; }
+
+    .btn-small {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #d1d5db;
+        font-weight: 500;
+    }
+
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.7rem;
+        border-radius: 6px;
+        border: none;
+        outline: none;
+        background: #374151;
+        color: white;
+    }
+
+    .factura-preview {
+        background: #374151;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .detalle-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #4b5563;
+    }
+
+    .total-factura {
+        text-align: right;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 2px solid #6b7280;
+        font-size: 1.2rem;
+    }
+
+    .user-info {
+        margin-top: auto;
+        padding: 1rem;
+        border-top: 1px solid #374151;
+        color: #d1d5db;
+        text-align: center;
+    }
+
+    /* Estilos para la nueva sección de facturas */
+    .filtros-facturas {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .filtros-facturas select,
+    .filtros-facturas input {
+        padding: 0.5rem;
+        border-radius: 4px;
+        border: 1px solid #4b5563;
+        background: #374151;
+        color: white;
+    }
+
+    /* Estilos para el modal de detalle de factura */
+    .modal-lg {
+        max-width: 100%;
+    }
+
+    .factura-detalle {
+        background: #1f2937;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        width: 500px;
+    }
+
+    .factura-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #374151;
+    }
+
+    .factura-cliente-vehiculo {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-card {
+        background: #374151;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+    }
+
+    .info-card h5 {
+        margin: 0 0 0.5rem 0;
+        color: #f3f4f6;
+        border-bottom: 1px solid #4b5563;
+        padding-bottom: 0.5rem;
+    }
+
+    .factura-costos {
+        background: #374151;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-top: 1rem;
+    }
+
+    .costo-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+    }
+
+    .costo-item.total {
+        border-top: 2px solid #6b7280;
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-top: 0.5rem;
+        padding-top: 1rem;
+    }
+
+    .tabla-repuestos {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.5rem;
+    }
+
+    .tabla-repuestos th,
+    .tabla-repuestos td {
+        padding: 0.5rem;
+        text-align: left;
+        border-bottom: 1px solid #4b5563;
+    }
+
+    .tabla-repuestos th {
+        background: #4b5563;
+        font-weight: bold;
+    }
+  </style>
+  <script type="module" src="js/mecanico.js"></script>
+</body>
+</html>

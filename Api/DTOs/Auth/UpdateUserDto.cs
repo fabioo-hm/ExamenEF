@@ -1,20 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Api.DTOs.Auth;
 
-public class RegisterDto
+public class UpdateUserDto
 {
-    [Required]
     public string? Username { get; set; }
-    [Required]
     public string? Email { get; set; }
-    [Required]
-    public string? Password { get; set; }
-    public string? Role { get; set; }
-
-
+    public string? Password { get; set; } // si quieres permitir cambiar password
+    public string? Role { get; set; }     // role a asignar (reemplaza roles existentes)
 }

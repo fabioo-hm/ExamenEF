@@ -47,22 +47,43 @@ public class UserService : IUserService
             Password = _passwordHasher.HashPassword(new UserMember(), registerDto.Password)
         };
 
-        // Si el rol viene vacío, usar el predeterminado
+        // 🔥 CORRECCIÓN: Asignar rol por defecto si está vacío O si no es válido
         var roleName = string.IsNullOrWhiteSpace(registerDto.Role)
-            ? UserAuthorization.rol_default.ToString()
+            ? UserAuthorization.rol_default.ToString()  // "Recepcionista"
             : registerDto.Role.Trim();
 
-        // Buscar el rol en BD (sin depender de mayúsculas/minúsculas)
+        // 🔥 CORRECCIÓN: Si el rol no es válido, usar Recepcionista por defecto
+        if (!Enum.GetNames(typeof(UserAuthorization.Roles)).Any(r => 
+            r.Equals(roleName, StringComparison.OrdinalIgnoreCase)))
+        {
+            // Asignar Recepcionista por defecto si el rol no es válido
+            roleName = UserAuthorization.rol_default.ToString();
+        }
+
+        // Buscar el rol en BD
         var rol = _unitOfWork.Roles
             .Find(r => r.Name.ToLower() == roleName.ToLower())
             .FirstOrDefault();
 
+        // Si el rol no existe, CREARLO
         if (rol == null)
-            return $"No se encontró el rol '{roleName}' en la base de datos.";
+        {
+            rol = new Rol 
+            { 
+                Name = roleName, 
+                Description = $"{roleName} role" 
+            };
+            await _unitOfWork.Roles.AddAsync(rol);
+            await _unitOfWork.SaveChanges();
+        }
 
         try
         {
-            usuario.UserMemberRols.Add(new UserMemberRol { RolId = rol.Id });
+            // Asignar el rol correctamente
+            usuario.UserMemberRols = new List<UserMemberRol>
+            {
+                new UserMemberRol { RolId = rol.Id }
+            };
 
             await _unitOfWork.UserMembers.AddAsync(usuario);
             await _unitOfWork.SaveChanges();
@@ -293,5 +314,134 @@ public class UserService : IUserService
         dataUserDto.RefreshToken = newRefreshToken.Token;
         dataUserDto.RefreshTokenExpiration = newRefreshToken.Expires;
         return dataUserDto;
+    }
+    // ✅ Helper simple (puedes poner en Api/DTOs or a common folder)
+    public class OperationResult
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; } = string.Empty;
+    }
+
+    // ✅ Obtener todos los usuarios
+    public async Task<List<UserListDto>> GetAllUsersAsync()
+    {
+        // Usamos el método nuevo del repositorio que hace Include(...) correctamente
+        var usersQuery = _unitOfWork.UserMembers.GetAllWithRoles();
+
+        var list = usersQuery
+            .Select(u => new UserListDto
+            {
+                Id = u.Id,
+                Username = u.Username,
+                Email = u.Email,
+                Roles = u.UserMemberRols != null
+                    ? u.UserMemberRols
+                        .Where(ur => ur.Rol != null)
+                        .Select(ur => ur.Rol.Name)
+                        .ToList()
+                    : new List<string>()
+            })
+            .ToList();
+
+        return await Task.FromResult(list);
+    }
+
+
+    // ✅ Actualizar usuario (usa int en vez de Guid)
+    public async Task<OperationResult> UpdateUserAsync(int id, UpdateUserDto dto)
+    {
+        var user = _unitOfWork.UserMembers
+            .Find(u => u.Id == id)
+            .FirstOrDefault();
+            
+        if (user == null)
+            return new OperationResult { Success = false, Message = "Usuario no encontrado." };
+
+        // Actualizar campos básicos
+        if (!string.IsNullOrWhiteSpace(dto.Username))
+            user.Username = dto.Username.Trim();
+
+        if (!string.IsNullOrWhiteSpace(dto.Email))
+            user.Email = dto.Email.Trim();
+
+        if (!string.IsNullOrWhiteSpace(dto.Password))
+            user.Password = _passwordHasher.HashPassword(user, dto.Password);
+
+        // 🔥 CORRECCIÓN: Manejo de roles usando la misma lógica que AddRoleAsync
+        if (!string.IsNullOrWhiteSpace(dto.Role))
+        {
+            var roleName = dto.Role.Trim();
+            
+            // 🔥 VALIDAR: Si el rol no es válido, usar Recepcionista por defecto
+            if (!Enum.GetNames(typeof(UserAuthorization.Roles)).Any(r => 
+                r.Equals(roleName, StringComparison.OrdinalIgnoreCase)))
+            {
+                roleName = UserAuthorization.rol_default.ToString();
+            }
+            
+            // Buscar el rol en BD (usando la misma lógica que AddRoleAsync)
+            var existingRole = _unitOfWork.Roles
+                .Find(r => EF.Functions.ILike(r.Name, roleName))
+                .FirstOrDefault();
+
+            // Si el rol no existe, CREARLO
+            if (existingRole == null)
+            {
+                existingRole = new Rol { 
+                    Name = roleName, 
+                    Description = $"{roleName} role" 
+                };
+                await _unitOfWork.Roles.AddAsync(existingRole);
+                await _unitOfWork.SaveChanges();
+            }
+
+            // 🔥 CORRECCIÓN: Usar GetByUserIdAsync en lugar de Find
+            // ELIMINAR TODOS LOS ROLES EXISTENTES (igual que en AddRoleAsync)
+            var existingUserRoles = await _unitOfWork.UserMemberRoles.GetByUserIdAsync(user.Id);
+
+            // 🧹 Eliminar roles antiguos (igual que en AddRoleAsync)
+            if (existingUserRoles.Any())
+            {
+                _unitOfWork.UserMemberRoles.RemoveRange(existingUserRoles);
+            }
+
+            // 🔥 ASIGNAR NUEVO ROL
+            var newUserRole = new UserMemberRol
+            {
+                UserMemberId = user.Id,
+                RolId = existingRole.Id
+            };
+            
+            await _unitOfWork.UserMemberRoles.AddAsync(newUserRole);
+            
+            // 💾 Guardar todos los cambios (roles eliminados y nuevo rol)
+            await _unitOfWork.SaveChanges();
+        }
+
+        // Actualizar usuario
+        await _unitOfWork.UserMembers.UpdateAsync(user);
+        await _unitOfWork.SaveChanges();
+
+        return new OperationResult { Success = true, Message = "Usuario actualizado correctamente." };
+    }
+
+    // ✅ Eliminar usuario (usa int en vez de Guid)
+    public async Task<OperationResult> DeleteUserAsync(int id)
+    {
+        var user = _unitOfWork.UserMembers.Find(u => u.Id == id).FirstOrDefault();
+        if (user == null)
+            return new OperationResult { Success = false, Message = "Usuario no encontrado." };
+
+        var userRoles = await _unitOfWork.UserMemberRoles.GetByUserIdAsync(user.Id);
+        if (userRoles.Any())
+        {
+            foreach (var ur in userRoles)
+                _unitOfWork.UserMemberRoles.Remove(ur); // ✅ Elimina uno a uno
+        }
+
+        await _unitOfWork.UserMembers.RemoveAsync(user);
+        await _unitOfWork.SaveChanges();
+
+        return new OperationResult { Success = true, Message = "Usuario eliminado correctamente." };
     }
 }
