@@ -26,7 +26,7 @@ document.getElementById("signUpForm").addEventListener("submit", async function(
                 username,
                 email,
                 password,
-                role // ← asegúrate que coincida con el nombre del campo que espera tu backend
+                role 
             })
         });
 

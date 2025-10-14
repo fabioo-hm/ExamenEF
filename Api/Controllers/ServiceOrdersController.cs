@@ -56,18 +56,18 @@ public class ServiceOrdersController : BaseApiController
         });
     }
 
-    // ✅ POST: api/serviceorders
+    
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateServiceOrderDto dto, CancellationToken ct = default)
     {
-        // Puedes agregar validaciones personalizadas si quieres:
+        
         if (dto.VehicleId == Guid.Empty)
             return BadRequest(new { Message = "El ID del vehículo es obligatorio." });
 
         if (dto.UserMemberId <= 0)
             return BadRequest(new { Message = "El ID del mecánico es obligatorio." });
 
-        // Crear entidad desde el DTO
+        
         var serviceOrder = new ServiceOrder(
             dto.VehicleId,
             dto.ServiceType,
@@ -79,7 +79,7 @@ public class ServiceOrdersController : BaseApiController
 
         await _repo.AddAsync(serviceOrder, ct);
 
-        // Opcional: devolver DTO creado
+        
         var created = new ServiceOrderDto(
             serviceOrder.Id,
             serviceOrder.VehicleId,
@@ -93,7 +93,7 @@ public class ServiceOrdersController : BaseApiController
         return CreatedAtAction(nameof(GetById), new { id = serviceOrder.Id }, created);
     }
 
-    // ✅ GET: api/serviceorders/all
+    
     [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<ServiceOrderDto>>> GetAll(CancellationToken ct)
     {
@@ -111,7 +111,7 @@ public class ServiceOrdersController : BaseApiController
         return Ok(result);
     }
 
-    // ✅ GET: api/serviceorders/{id}
+    
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<ServiceOrderDto>> GetById(Guid id, CancellationToken ct)
     {
@@ -132,7 +132,7 @@ public class ServiceOrdersController : BaseApiController
         return Ok(dto);
     }
 
-    // ✅ PUT: api/serviceorders/{id}
+    
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateServiceOrderDto dto, CancellationToken ct)
     {
@@ -140,7 +140,7 @@ public class ServiceOrdersController : BaseApiController
         if (existing is null)
             return NotFound();
 
-        // Actualizar la entidad existente en lugar de crear una nueva
+        
         existing.Update(
             dto.VehicleId,
             dto.ServiceType,
@@ -154,7 +154,7 @@ public class ServiceOrdersController : BaseApiController
         return NoContent();
     }
 
-    // ✅ DELETE: api/serviceorders/{id}
+
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {
@@ -173,7 +173,7 @@ public class ServiceOrdersController : BaseApiController
         if (existing is null)
             return NotFound();
 
-        // Actualizar solo el estado
+        
         existing.UpdateStatus(dto.OrderStatus);
 
         await _repo.UpdateAsync(existing, ct);

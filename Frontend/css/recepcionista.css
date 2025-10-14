@@ -111,7 +111,7 @@
     padding: 1rem;
 }
 
-/* Estilos para modal de orden */
+
 .modal-content.large {
     width: 700px;
     max-width: 95%;
@@ -228,7 +228,7 @@
     padding: 0.4rem 0.8rem;
     font-size: 0.9rem;
 }
-/* Estilos para repuestos en el modal */
+
 .repuestos-container {
     margin-bottom: 1rem;
     border: 1px solid #374151;

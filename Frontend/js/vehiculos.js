@@ -5,12 +5,12 @@ const btnAgregarVehiculo = document.getElementById("btnAgregarVehiculo");
 const btnEditarVehiculo = document.getElementById("btnEditarVehiculo");
 const btnEliminarVehiculo = document.getElementById("btnEliminarVehiculo");
 
-// MODALES
+
 const modalCrearVehiculo = document.getElementById("modalCrearVehiculo");
 const modalEditarVehiculo = document.getElementById("modalEditarVehiculo");
 const modalEliminarVehiculo = document.getElementById("modalEliminarVehiculo");
 
-// FORMULARIOS
+
 const formCrearVehiculo = document.getElementById("formCrearVehiculo");
 const formEditarVehiculo = document.getElementById("formEditarVehiculo");
 const formEliminarVehiculo = document.getElementById("formEliminarVehiculo");
@@ -69,7 +69,7 @@ formEditarVehiculo.addEventListener("submit", async (e) => {
   }
 });
 
-// === CREAR VEHÍCULO ===
+
 formCrearVehiculo.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -100,7 +100,7 @@ formCrearVehiculo.addEventListener("submit", async (e) => {
   }
 });
 
-// === ELIMINAR VEHÍCULO ===
+
 formEliminarVehiculo.addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = document.getElementById("vehiculoEliminarId").value;
@@ -118,7 +118,7 @@ formEliminarVehiculo.addEventListener("submit", async (e) => {
   }
 });
 
-// === CONTROL DE MODALES ===
+
 btnAgregarVehiculo.onclick = () => (modalCrearVehiculo.style.display = "flex");
 btnEditarVehiculo.onclick = () => (modalEditarVehiculo.style.display = "flex");
 btnEliminarVehiculo.onclick = () => (modalEliminarVehiculo.style.display = "flex");
@@ -127,5 +127,5 @@ document.getElementById("vehiculoCerrarCrear").addEventListener("click", () => m
 document.getElementById("vehiculoCerrarEditar").addEventListener("click", () => modalEditarVehiculo.style.display = "none");
 document.getElementById("vehiculoCerrarEliminar").addEventListener("click", () => modalEliminarVehiculo.style.display = "none");
 
-// === CARGA INICIAL ===
+
 cargarVehiculos();

@@ -34,19 +34,19 @@ public static class ApplicationServiceExtensions
                 "https://admin.ejemplo.com"
             };
             options.AddPolicy("CorsPolicy", builder =>
-                builder.AllowAnyOrigin()   //WithOrigins("https://dominio.com")
-                .AllowAnyMethod()          //WithMethods("GET","POST")
-                .AllowAnyHeader());        //WithHeaders("accept","content-type")
+                builder.AllowAnyOrigin()   
+                .AllowAnyMethod()          
+                .AllowAnyHeader());        
 
             options.AddPolicy("CorsPolicyUrl", builder =>
-                builder.WithOrigins("https://localhost:4200", "https://localhost:5500")   //WithOrigins("https://dominio.com")
-                .AllowAnyMethod()          //WithMethods("GET","POST")
+                builder.WithOrigins("https://localhost:4200", "https://localhost:5500") 
+                .AllowAnyMethod()          
                 .AllowAnyHeader());
 
             options.AddPolicy("Dinamica", builder =>
-                builder.SetIsOriginAllowed(origin => allowed.Contains(origin))   //WithOrigins("https://dominio.com")
+                builder.SetIsOriginAllowed(origin => allowed.Contains(origin))   
                 .WithMethods("GET", "POST")
-                .WithHeaders("Content-Type", "Authorization"));        //WithHeaders("accept","content-type")
+                .WithHeaders("Content-Type", "Authorization"));        
         });
     public static void AddApplicationServices(this IServiceCollection services)
     {
@@ -85,7 +85,7 @@ public static class ApplicationServiceExtensions
                 await context.HttpContext.Response.WriteAsync(mensaje, token);
             };
 
-            // Aquí no se define GlobalLimiter
+            
             options.AddPolicy("ipLimiter", httpContext =>
             {
                 var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
@@ -103,10 +103,10 @@ public static class ApplicationServiceExtensions
     }
     public static void AddJwt(this IServiceCollection services, IConfiguration configuration)
     {
-        //Configuration from AppSettings
+        
         services.Configure<JWT>(configuration.GetSection("JWT"));
 
-        //Adding Athentication - JWT
+        
         _ = services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -128,10 +128,10 @@ public static class ApplicationServiceExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]!))
                 };
             });
-        // 3. Authorization – Policies
+        
         services.AddAuthorization(options =>
         {
-            // Política que exige rol Admin
+            
             options.AddPolicy("Admins", policy =>
                 policy.RequireRole("Administrator"));
 
@@ -141,11 +141,11 @@ public static class ApplicationServiceExtensions
             options.AddPolicy("Pro", policy =>
                 policy.RequireRole("Professional"));
 
-            // Política que exige claim Subscription = "Premium"
+            
             options.AddPolicy("Professional", policy =>
                 policy.RequireClaim("Subscription", "Premium"));
 
-            // Política compuesta: rol Admin o claim Premium
+            
             options.AddPolicy("OtherOPremium", policy =>
                 policy.RequireAssertion(context =>
                     context.User.IsInRole("Other")

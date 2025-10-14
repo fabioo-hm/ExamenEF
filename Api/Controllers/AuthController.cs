@@ -17,7 +17,7 @@ public class AuthController : BaseApiController
         _userService = userService;
     }
 
-    // ✅ Registro
+    
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
@@ -25,7 +25,7 @@ public class AuthController : BaseApiController
         return Ok(new { message = result });
     }
 
-    // ✅ Login
+    
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto, CancellationToken ct)
     {
@@ -36,7 +36,7 @@ public class AuthController : BaseApiController
         return Ok(result);
     }
 
-    // ✅ Asignar rol
+
     [HttpPost("add-role")]
     public async Task<IActionResult> AddRole([FromBody] AddRoleDto dto)
     {
@@ -44,7 +44,7 @@ public class AuthController : BaseApiController
         return Ok(new { message = result });
     }
 
-    // ✅ Refrescar token
+    
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto dto)
     {
@@ -57,7 +57,7 @@ public class AuthController : BaseApiController
 
         return Ok(result);
     }
-    // GET all users
+    
     [HttpGet("users")]
     public async Task<IActionResult> GetAllUsers()
     {
@@ -65,7 +65,7 @@ public class AuthController : BaseApiController
         return Ok(users);
     }
 
-    // PUT update user (id = GUID)
+    
     [HttpPut("users/{id:int}")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto dto)
     {
@@ -76,7 +76,7 @@ public class AuthController : BaseApiController
         return Ok(new { message = result.Message });
     }
 
-    // DELETE user
+    
     [HttpDelete("users/{id:int}")]
     public async Task<IActionResult> DeleteUser(int id)
     {

@@ -1,29 +1,29 @@
 import { API_URL } from "./config.js";
 
-// === ELEMENTOS DOM ===
+
 const tablaRepuestos = document.querySelector("#tablaRepuestos tbody");
 
-// Botones principales
+
 const btnAgregar = document.getElementById("btnAgregarRepuesto");
 const btnEditar = document.getElementById("btnEditarRepuesto");
 const btnEliminar = document.getElementById("btnEliminarRepuesto");
 
-// Modales
+
 const modalCrear = document.getElementById("modalCrearRepuesto");
 const modalEditar = document.getElementById("modalEditarRepuesto");
 const modalEliminar = document.getElementById("modalEliminarRepuesto");
 
-// Formularios
+
 const formCrear = document.getElementById("formCrearRepuesto");
 const formEditar = document.getElementById("formEditarRepuesto");
 const formEliminar = document.getElementById("formEliminarRepuesto");
 
-// Botones cerrar
+
 document.getElementById("repuestoCerrarCrear").addEventListener("click", () => modalCrear.style.display = "none");
 document.getElementById("repuestoCerrarEditar").addEventListener("click", () => modalEditar.style.display = "none");
 document.getElementById("repuestoCerrarEliminar").addEventListener("click", () => modalEliminar.style.display = "none");
 
-// === CARGAR REPUESTOS ===
+
 async function cargarRepuestos() {
   try {
     const res = await fetch(`${API_URL}/spareparts/all`);
@@ -49,7 +49,7 @@ async function cargarRepuestos() {
   }
 }
 
-// === CREAR REPUESTO ===
+
 btnAgregar.addEventListener("click", () => {
   modalCrear.style.display = "flex";
 });
@@ -82,7 +82,7 @@ formCrear.addEventListener("submit", async e => {
   }
 });
 
-// === EDITAR REPUESTO ===
+
 btnEditar.addEventListener("click", () => {
   modalEditar.style.display = "flex";
 });
@@ -117,7 +117,7 @@ formEditar.addEventListener("submit", async e => {
   }
 });
 
-// === ELIMINAR REPUESTO ===
+
 btnEliminar.addEventListener("click", () => {
   modalEliminar.style.display = "flex";
 });
@@ -141,5 +141,5 @@ formEliminar.addEventListener("submit", async e => {
   }
 });
 
-// === INICIALIZAR ===
+
 cargarRepuestos();

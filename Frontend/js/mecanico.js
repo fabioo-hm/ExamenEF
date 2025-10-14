@@ -54,7 +54,7 @@ function verificarPermisosMecanico() {
     }
 }
 
-// Función para obtener el ID del mecánico desde la API
+
 async function obtenerIdMecanicoDesdeAPI(username) {
     try {
         console.log(`🔄 Buscando ID del mecánico por username: ${username}`);
@@ -163,7 +163,7 @@ function inicializarEventos() {
 }
 
 function inicializarModales() {
-    // Modal actualizar estado
+    
     document.getElementById("cerrarActualizarOrden").addEventListener("click", function() {
         document.getElementById("modalActualizarOrden").style.display = "none";
     });
@@ -173,7 +173,7 @@ function inicializarModales() {
         actualizarEstadoOrden();
     });
 
-    // Modal generar factura
+    
     document.getElementById("cerrarGenerarFactura").addEventListener("click", function() {
         document.getElementById("modalGenerarFactura").style.display = "none";
     });
@@ -183,13 +183,13 @@ function inicializarModales() {
         crearFactura();
     });
 
-    // Modal detalle factura
+    
     document.getElementById("cerrarDetalleFactura").addEventListener("click", function() {
         document.getElementById("modalDetalleFactura").style.display = "none";
     });
 }
 
-// ===== FUNCIONES PARA CARGAR DATOS =====
+
 
 async function cargarOrdenesMecanico() {
     try {
@@ -262,7 +262,7 @@ async function cargarTodasLasFacturas() {
     }
 }
 
-// ===== FUNCIONES DE LA API =====
+
 
 async function obtenerOrdenesPorMecanico() {
     try {
@@ -490,7 +490,7 @@ async function enriquecerFacturasConDatosCompletos(facturas) {
     }
 }
 
-// ===== FUNCIONES AUXILIARES =====
+
 
 async function obtenerVehiculos() {
     try {
@@ -591,7 +591,7 @@ async function obtenerDetallesOrdenAlternativo(ordenId) {
     }
 }
 
-// ===== RENDERIZADO DE DATOS =====
+
 
 function actualizarMetricasOrdenes(ordenes) {
     const totalPendientes = ordenes.filter(o => o.orderStatusId === 1).length;
@@ -801,7 +801,7 @@ function renderizarTablaTodasFacturas(facturas) {
     console.log("✅ Tabla de todas las facturas renderizada con", facturas.length, "facturas");
 }
 
-// ===== FUNCIONALIDADES DE ACTUALIZACIÓN =====
+
 
 function abrirModalActualizar(ordenId, estadoActual) {
     document.getElementById("ordenId").value = ordenId;
@@ -853,7 +853,7 @@ async function actualizarEstadoOrden() {
     }
 }
 
-// ===== FUNCIONALIDADES DE FACTURACIÓN =====
+
 
 async function generarFactura(ordenId) {
     try {
@@ -1068,14 +1068,14 @@ async function cargarDetallesFacturaCompleta(factura) {
             obtenerRepuestos()
         ]);
 
-        // Actualizar la información básica de la factura
+       
         document.getElementById("detalleFacturaId").textContent = `Factura #${factura.id.substring(0, 8)}`;
         document.getElementById("detalleFacturaFecha").textContent = `Fecha: ${new Date(factura.issueDate).toLocaleDateString()}`;
         document.getElementById("detalleFacturaEstado").textContent = `Estado: ${factura.paymentMethod === 1 ? 'Pagada' : 'Pendiente'}`;
         document.getElementById("detalleFacturaTotal").textContent = `Total: $${((factura.laborCost || 0) + (factura.partsTotal || 0)).toFixed(2)}`;
         document.getElementById("detalleFacturaMetodoPago").textContent = `Método: ${factura.paymentMethod === 1 ? 'Efectivo' : factura.paymentMethod === 2 ? 'Tarjeta' : 'Transferencia'}`;
 
-        // Información de la orden de servicio
+        
         if (orden) {
             const tiposServicio = {
                 1: "Mantenimiento preventivo",
@@ -1098,7 +1098,7 @@ async function cargarDetallesFacturaCompleta(factura) {
             `;
         }
 
-        // Detalles de repuestos
+        
         if (detallesRepuestos && detallesRepuestos.length > 0) {
             let tablaRepuestos = `
                 <table class="tabla-repuestos">
@@ -1140,7 +1140,7 @@ async function cargarDetallesFacturaCompleta(factura) {
             document.getElementById("detalleRepuestosInfo").innerHTML = `<p>No hay repuestos registrados en esta orden</p>`;
         }
 
-        // Desglose de costos
+        
         document.getElementById("detalleSubtotalRepuestos").textContent = `$${(factura.partsTotal || 0).toFixed(2)}`;
         document.getElementById("detalleManoObra").textContent = `$${(factura.laborCost || 0).toFixed(2)}`;
         document.getElementById("detalleTotalFinal").textContent = `$${((factura.laborCost || 0) + (factura.partsTotal || 0)).toFixed(2)}`;
@@ -1151,7 +1151,7 @@ async function cargarDetallesFacturaCompleta(factura) {
     }
 }
 
-// ===== FUNCIONES DE FILTRADO =====
+
 
 function aplicarFiltrosFacturas() {
     const estado = document.getElementById("filtroEstadoFactura").value;
@@ -1167,7 +1167,7 @@ function limpiarFiltrosFacturas() {
     cargarTodasLasFacturas();
 }
 
-// ===== FUNCIONES AUXILIARES =====
+
 
 function actualizarFechaActual() {
     const ahora = new Date();
@@ -1186,7 +1186,7 @@ function mostrarExito(mensaje) {
     alert(`✅ ${mensaje}`);
 }
 
-// Hacer funciones disponibles globalmente para los onclick
+
 window.abrirModalActualizar = abrirModalActualizar;
 window.generarFactura = generarFactura;
 window.verDetalleFactura = verDetalleFactura;

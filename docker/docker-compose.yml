@@ -2,27 +2,27 @@ services:
   db:
     image: postgres:16
     environment:
-      POSTGRES_DB: autotallermanager       # Cambié "cleanshop" a "trabajoef"
+      POSTGRES_DB: autotallermanager       
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
       - "5433:5432"
     volumes:
-      - autotallermanager_data:/var/lib/postgresql/data  # Cambié el nombre del volumen a "trabajoef_data"
+      - autotallermanager_data:/var/lib/postgresql/data  
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d autotallermanager"]  # Cambié el nombre de la base de datos a "trabajoef"
+      test: ["CMD-SHELL", "pg_isready -U postgres -d autotallermanager"]
       interval: 5s
       timeout: 3s
       retries: 10
 
   api:
     build:
-      context: ..                       # RAÍZ del repo (donde están todas las carpetas TrabajoEF.*)
-      dockerfile: Api/Dockerfile  # Cambié el nombre del directorio de "CleanShop.Api" a "TrabajoEF.Api"
+      context: ..                       
+      dockerfile: Api/Dockerfile  
     environment:
-      ASPNETCORE_HTTP_PORTS: "8080"    # o usa ASPNETCORE_URLS si prefieres
+      ASPNETCORE_HTTP_PORTS: "8080"    
       ASPNETCORE_ENVIRONMENT: "Development"
-      ConnectionStrings__Postgres: "Host=db;Port=5432;Database=autotallermanager;Username=postgres;Password=postgres"  # Cambié la base de datos a "trabajoef"
+      ConnectionStrings__Postgres: "Host=db;Port=5432;Database=autotallermanager;Username=postgres;Password=postgres"  
     ports:
       - "8081:8080"
     depends_on:
@@ -41,4 +41,4 @@ services:
       - db
 
 volumes:
-  autotallermanager_data:  # Cambié el nombre del volumen a "trabajoef_data"
+  autotallermanager_data:  

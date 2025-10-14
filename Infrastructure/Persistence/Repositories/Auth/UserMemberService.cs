@@ -109,7 +109,7 @@ public class UserMemberService : IUserMemberService
     {
         return await _context.UserMembers
             .Include(u => u.UserMemberRols)
-                .ThenInclude(ur => ur.Rol) // 👈 Esto es CLAVE
+                .ThenInclude(ur => ur.Rol) 
             .Include(u => u.RefreshTokens)
             .FirstOrDefaultAsync(u => u.Username == userName, ct);
     }

@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <!-- SIDEBAR -->
+ 
   <aside class="sidebar">
     <h2 class="brand">
       <span>AutoTaller</span><span>Manager</span> <span>Mecánico</span>
@@ -24,20 +24,20 @@
     </div>
   </aside>
 
-  <!-- MAIN -->
+
   <main>
     <h1>Panel de Mecánico</h1>
     
-    <!-- Sección de Órdenes Asignadas -->
+    
     <section id="ordenes" class="section active">
         <div class="header-row">
           <h2>Órdenes de Servicio Asignadas</h2>
           <p id="fechaActual" style="color: #6b7280; font-size: 1rem;"></p>
         </div>
 
-        <!-- Tarjetas de Métricas para Mecánico -->
+        
         <div class="metrics-grid">
-          <!-- Órdenes Pendientes -->
+          
           <div class="metric-card">
             <div class="metric-icon pendientes">
               <i class="fas fa-clock"></i>
@@ -48,7 +48,7 @@
             </div>
           </div>
 
-          <!-- Órdenes en Proceso -->
+          
           <div class="metric-card">
             <div class="metric-icon proceso">
               <i class="fas fa-tools"></i>
@@ -59,7 +59,7 @@
             </div>
           </div>
 
-          <!-- Órdenes Completadas -->
+          
           <div class="metric-card">
             <div class="metric-icon completadas">
               <i class="fas fa-check-circle"></i>
@@ -71,7 +71,7 @@
           </div>
         </div>
 
-        <!-- Tabla de Órdenes -->
+        
         <div class="table-container">
           <table id="tablaOrdenes" class="data-table">
             <thead>
@@ -87,13 +87,13 @@
               </tr>
             </thead>
             <tbody>
-              <!-- Filas dinámicas -->
+              
             </tbody>
           </table>
         </div>
     </section>
 
-    <!-- Sección de Facturas -->
+    
     <section id="facturas" class="section">
         <div class="header-row">
           <h2>Generar Facturas</h2>
@@ -113,7 +113,7 @@
               </tr>
             </thead>
             <tbody>
-              <!-- Filas dinámicas -->
+              
             </tbody>
           </table>
         </div>
@@ -148,12 +148,12 @@
               </tr>
             </thead>
             <tbody>
-              <!-- Filas dinámicas -->
+              
             </tbody>
           </table>
         </div>
     </section>
-    <!-- Modal para Actualizar Estado de Orden -->
+    
     <div id="modalActualizarOrden" class="modal">
         <div class="modal-content">
             <h3>Actualizar Estado de Orden</h3>
@@ -173,7 +173,7 @@
         </div>
     </div>
 
-    <!-- Modal para Generar Factura -->
+    
     <div id="modalGenerarFactura" class="modal">
         <div class="modal-contentfact">
             <h3>Generar Factura</h3>
@@ -182,7 +182,7 @@
                 <div class="factura-preview">
                     <h4>Resumen de la Orden</h4>
                     <div id="facturaDetalles">
-                        <!-- Detalles de la factura se cargarán aquí -->
+                        
                     </div>
                     <div class="form-group">
                         <label for="metodoPago">Método de Pago:</label>
@@ -205,7 +205,7 @@
         <div class="modal-contentmec">
             <h3>Detalle Completo de Factura</h3>
             <div class="factura-detalle">
-                <!-- Encabezado de la factura -->
+                
                 <div class="factura-header">
                     <div class="factura-info">
                         <h4 id="detalleFacturaId">Factura #</h4>
@@ -218,23 +218,23 @@
                     </div>
                 </div>
 
-                <!-- Detalles de la orden de servicio -->
+                
                 <div class="info-card">
                     <h5>Orden de Servicio</h5>
                     <div id="detalleOrdenInfo">
-                        <!-- Datos de la orden -->
+                       
                     </div>
                 </div>
 
-                <!-- Detalles de repuestos -->
+                
                 <div class="info-card">
                     <h5>Repuestos Utilizados</h5>
                     <div id="detalleRepuestosInfo">
-                        <!-- Tabla de repuestos -->
+                       
                     </div>
                 </div>
 
-                <!-- Desglose de costos -->
+                
                 <div class="factura-costos">
                     <div class="costo-item">
                         <span>Subtotal Repuestos:</span>
@@ -258,7 +258,7 @@
   <script type="module" src="js/mecanico.js"></script>
 
   <style>
-    /* Estilos adicionales para el panel de mecánico */
+    
     .modal-contentmec {
         position: relative;
         background: #1f2937;
@@ -378,7 +378,7 @@
         text-align: center;
     }
 
-    /* Estilos para la nueva sección de facturas */
+    
     .filtros-facturas {
         display: flex;
         gap: 1rem;
@@ -395,7 +395,7 @@
         color: white;
     }
 
-    /* Estilos para el modal de detalle de factura */
+    
     .modal-lg {
         max-width: 100%;
     }

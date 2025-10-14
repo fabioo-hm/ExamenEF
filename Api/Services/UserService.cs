@@ -47,25 +47,25 @@ public class UserService : IUserService
             Password = _passwordHasher.HashPassword(new UserMember(), registerDto.Password)
         };
 
-        // 🔥 CORRECCIÓN: Asignar rol por defecto si está vacío O si no es válido
+        
         var roleName = string.IsNullOrWhiteSpace(registerDto.Role)
-            ? UserAuthorization.rol_default.ToString()  // "Recepcionista"
+            ? UserAuthorization.rol_default.ToString()  
             : registerDto.Role.Trim();
 
-        // 🔥 CORRECCIÓN: Si el rol no es válido, usar Recepcionista por defecto
+        
         if (!Enum.GetNames(typeof(UserAuthorization.Roles)).Any(r => 
             r.Equals(roleName, StringComparison.OrdinalIgnoreCase)))
         {
-            // Asignar Recepcionista por defecto si el rol no es válido
+            
             roleName = UserAuthorization.rol_default.ToString();
         }
 
-        // Buscar el rol en BD
+        
         var rol = _unitOfWork.Roles
             .Find(r => r.Name.ToLower() == roleName.ToLower())
             .FirstOrDefault();
 
-        // Si el rol no existe, CREARLO
+        
         if (rol == null)
         {
             rol = new Rol 
@@ -79,7 +79,7 @@ public class UserService : IUserService
 
         try
         {
-            // Asignar el rol correctamente
+            
             usuario.UserMemberRols = new List<UserMemberRol>
             {
                 new UserMemberRol { RolId = rol.Id }
@@ -99,7 +99,7 @@ public class UserService : IUserService
     {
         var dto = new DataUserDto { IsAuthenticated = false };
 
-        // 1) Normalización y validación básica (evita enumeración de usuarios)
+        
         var username = model.Username?.Trim();
         var password = model.Password ?? string.Empty;
 
@@ -109,7 +109,7 @@ public class UserService : IUserService
             return dto;
         }
 
-        // 2) Lookup del usuario (ideal: repositorio case-insensitive/normalizado)
+        
         var usuario = await _unitOfWork.UserMembers.GetByUserNameAsync(username, ct);
         if (usuario is null)
         {
@@ -117,7 +117,7 @@ public class UserService : IUserService
             return dto;
         }
 
-        // 3) Verificación de contraseña (+ rehash si se requiere)
+        
         var verification = _passwordHasher.VerifyHashedPassword(usuario, usuario.Password, password);
         if (verification == PasswordVerificationResult.Failed)
         {
@@ -129,22 +129,22 @@ public class UserService : IUserService
         {
             usuario.Password = _passwordHasher.HashPassword(usuario, password);
             await _unitOfWork.UserMembers.UpdateAsync(usuario, ct);
-            // No retornamos aún; seguimos el flujo normal
+        
         }
 
-        // 4) Preparar colecciones de forma segura
+        
         var roles = usuario.UserMemberRols
             .Select(ur => ur.Rol.Name)
             .ToList();
         usuario.RefreshTokens ??= new List<RefreshToken>();
 
-        // 5) Transacción: rotación de refresh tokens + persistencia
+        
         await _unitOfWork.ExecuteInTransactionAsync(async _ =>
         {
-            // Política: ROTACIÓN. Revoca todos los activos antes de emitir uno nuevo
+            
             foreach (var t in usuario.RefreshTokens.Where(t => t.IsActive))
             {
-                t.Revoked = DateTime.UtcNow;                 // UTC          // opcional
+                t.Revoked = DateTime.UtcNow;            
             }
 
             var refresh = CreateRefreshToken();
@@ -153,10 +153,10 @@ public class UserService : IUserService
             await _unitOfWork.SaveChanges(ct);
         }, ct);
 
-        // 6) Emitir JWT (usa tu CreateJwtToken existente)
+        
         var jwt = CreateJwtToken(usuario);
 
-        // 7) Salida consistente (UTC y DateTimeOffset?)
+        
         var currentRefresh = usuario.RefreshTokens.OrderByDescending(t => t.Created).First();
 
         dto.IsAuthenticated = true;
@@ -250,24 +250,23 @@ public class UserService : IUserService
             existingRole = newRole;
         }
 
-        // 🔥 Aquí está el cambio importante
-        // Si el usuario ya tiene un rol asignado, lo limpiamos antes de agregar el nuevo
+        
         var existingUserRoles = await _unitOfWork.UserMemberRoles.GetByUserIdAsync(user.Id);
 
-        // 🧹 Eliminar roles antiguos
+    
         if (existingUserRoles.Any())
         {
             _unitOfWork.UserMemberRoles.RemoveRange(existingUserRoles);
         }
 
-        // 🆕 Asignar nuevo rol
+    
         await _unitOfWork.UserMemberRoles.AddAsync(new UserMemberRol
         {
             UserMemberId = user.Id,
             RolId = existingRole.Id
         });
 
-        // 💾 Guardar todo en una sola transacción
+        
         await _unitOfWork.SaveChanges();
 
         return $"Rol {roleName} correctamente asignado a {model.Username}.";
@@ -295,14 +294,14 @@ public class UserService : IUserService
             dataUserDto.Message = $"Token is not active.";
             return dataUserDto;
         }
-        //Revoque the current refresh token and
+        
         refreshTokenBd.Revoked = DateTime.UtcNow;
-        //generate a new refresh token and save it in the database
+        
         var newRefreshToken = CreateRefreshToken();
         usuario.RefreshTokens.Add(newRefreshToken);
         await _unitOfWork.UserMembers.UpdateAsync(usuario);
         await _unitOfWork.SaveChanges();
-        //Generate a new Json Web Token
+        
         dataUserDto.IsAuthenticated = true;
         JwtSecurityToken jwtSecurityToken = CreateJwtToken(usuario);
         dataUserDto.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
@@ -315,17 +314,17 @@ public class UserService : IUserService
         dataUserDto.RefreshTokenExpiration = newRefreshToken.Expires;
         return dataUserDto;
     }
-    // ✅ Helper simple (puedes poner en Api/DTOs or a common folder)
+    
     public class OperationResult
     {
         public bool Success { get; set; }
         public string Message { get; set; } = string.Empty;
     }
 
-    // ✅ Obtener todos los usuarios
+
     public async Task<List<UserListDto>> GetAllUsersAsync()
     {
-        // Usamos el método nuevo del repositorio que hace Include(...) correctamente
+        
         var usersQuery = _unitOfWork.UserMembers.GetAllWithRoles();
 
         var list = usersQuery
@@ -347,7 +346,7 @@ public class UserService : IUserService
     }
 
 
-    // ✅ Actualizar usuario (usa int en vez de Guid)
+    
     public async Task<OperationResult> UpdateUserAsync(int id, UpdateUserDto dto)
     {
         var user = _unitOfWork.UserMembers
@@ -357,7 +356,7 @@ public class UserService : IUserService
         if (user == null)
             return new OperationResult { Success = false, Message = "Usuario no encontrado." };
 
-        // Actualizar campos básicos
+        
         if (!string.IsNullOrWhiteSpace(dto.Username))
             user.Username = dto.Username.Trim();
 
@@ -367,24 +366,24 @@ public class UserService : IUserService
         if (!string.IsNullOrWhiteSpace(dto.Password))
             user.Password = _passwordHasher.HashPassword(user, dto.Password);
 
-        // 🔥 CORRECCIÓN: Manejo de roles usando la misma lógica que AddRoleAsync
+        
         if (!string.IsNullOrWhiteSpace(dto.Role))
         {
             var roleName = dto.Role.Trim();
             
-            // 🔥 VALIDAR: Si el rol no es válido, usar Recepcionista por defecto
+            
             if (!Enum.GetNames(typeof(UserAuthorization.Roles)).Any(r => 
                 r.Equals(roleName, StringComparison.OrdinalIgnoreCase)))
             {
                 roleName = UserAuthorization.rol_default.ToString();
             }
             
-            // Buscar el rol en BD (usando la misma lógica que AddRoleAsync)
+            
             var existingRole = _unitOfWork.Roles
                 .Find(r => EF.Functions.ILike(r.Name, roleName))
                 .FirstOrDefault();
 
-            // Si el rol no existe, CREARLO
+        
             if (existingRole == null)
             {
                 existingRole = new Rol { 
@@ -395,17 +394,16 @@ public class UserService : IUserService
                 await _unitOfWork.SaveChanges();
             }
 
-            // 🔥 CORRECCIÓN: Usar GetByUserIdAsync en lugar de Find
-            // ELIMINAR TODOS LOS ROLES EXISTENTES (igual que en AddRoleAsync)
+            
             var existingUserRoles = await _unitOfWork.UserMemberRoles.GetByUserIdAsync(user.Id);
 
-            // 🧹 Eliminar roles antiguos (igual que en AddRoleAsync)
+            
             if (existingUserRoles.Any())
             {
                 _unitOfWork.UserMemberRoles.RemoveRange(existingUserRoles);
             }
 
-            // 🔥 ASIGNAR NUEVO ROL
+            
             var newUserRole = new UserMemberRol
             {
                 UserMemberId = user.Id,
@@ -414,19 +412,18 @@ public class UserService : IUserService
             
             await _unitOfWork.UserMemberRoles.AddAsync(newUserRole);
             
-            // 💾 Guardar todos los cambios (roles eliminados y nuevo rol)
+            
             await _unitOfWork.SaveChanges();
         }
 
-        // Actualizar usuario
+        
         await _unitOfWork.UserMembers.UpdateAsync(user);
         await _unitOfWork.SaveChanges();
 
         return new OperationResult { Success = true, Message = "Usuario actualizado correctamente." };
     }
 
-    // ✅ Eliminar usuario (usa int en vez de Guid)
-    public async Task<OperationResult> DeleteUserAsync(int id)
+        public async Task<OperationResult> DeleteUserAsync(int id)
     {
         var user = _unitOfWork.UserMembers.Find(u => u.Id == id).FirstOrDefault();
         if (user == null)
@@ -436,7 +433,7 @@ public class UserService : IUserService
         if (userRoles.Any())
         {
             foreach (var ur in userRoles)
-                _unitOfWork.UserMemberRoles.Remove(ur); // ✅ Elimina uno a uno
+                _unitOfWork.UserMemberRoles.Remove(ur); 
         }
 
         await _unitOfWork.UserMembers.RemoveAsync(user);

@@ -19,8 +19,8 @@ public sealed class ServiceOrderConfiguration : IEntityTypeConfiguration<Service
         builder.Property(os => os.OrderStatus)
                 .IsRequired()
             .HasConversion(
-                v => v.ToString(),                             // Enum -> string
-                v => (OrderStatus)Enum.Parse(typeof(OrderStatus), v)) // string -> Enum
+                v => v.ToString(),                             
+                v => (OrderStatus)Enum.Parse(typeof(OrderStatus), v)) 
             .HasColumnType("varchar(50)");
 
         builder.HasOne(os => os.UserMember)
@@ -39,8 +39,8 @@ public sealed class ServiceOrderConfiguration : IEntityTypeConfiguration<Service
         builder.Property(s => s.ServiceType)
             .IsRequired()
             .HasConversion(
-                v => v.ToString(),                             // Enum -> string
-                v => (ServiceType)Enum.Parse(typeof(ServiceType), v)) // string -> Enum
+                v => v.ToString(),                             
+                v => (ServiceType)Enum.Parse(typeof(ServiceType), v)) 
             .HasColumnType("varchar(50)");
 
         builder.HasOne(s => s.Vehicle)

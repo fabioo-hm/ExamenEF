@@ -24,7 +24,7 @@ public class OrderDetailsController : BaseApiController
         _repository = repository;
     }
 
-    // ✅ GET: api/orderdetails/all
+    
     [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<OrderDetailDto>>> GetAll(CancellationToken ct)
     {
@@ -33,7 +33,7 @@ public class OrderDetailsController : BaseApiController
         return Ok(dto);
     }
 
-    // ✅ GET: api/orderdetails/{id}
+    
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct = default)
     {
@@ -53,7 +53,7 @@ public class OrderDetailsController : BaseApiController
         return Ok(dto);
     }
 
-    // ✅ GET: api/orderdetails/by-serviceorder/{serviceOrderId}
+    
     [HttpGet("by-serviceorder/{serviceOrderId:guid}")]
     public async Task<IActionResult> GetByServiceOrder(Guid serviceOrderId, CancellationToken ct = default)
     {
@@ -71,7 +71,7 @@ public class OrderDetailsController : BaseApiController
         return Ok(result);
     }
 
-    // ✅ GET: api/orderdetails/total/{serviceOrderId}
+    
     [HttpGet("total/{serviceOrderId:guid}")]
     public async Task<IActionResult> GetTotal(Guid serviceOrderId, CancellationToken ct = default)
     {
@@ -79,7 +79,7 @@ public class OrderDetailsController : BaseApiController
         return Ok(new { ServiceOrderId = serviceOrderId, Total = total });
     }
 
-    // ✅ POST: api/orderdetails
+    
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateOrderDetailDto dto, CancellationToken ct = default)
     {
@@ -102,7 +102,7 @@ public class OrderDetailsController : BaseApiController
         return CreatedAtAction(nameof(GetById), new { id = orderDetail.Id }, created);
     }
 
-    // ✅ PUT: api/orderdetails/{id}
+    
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateOrderDetailDto dto, CancellationToken ct = default)
     {
@@ -110,7 +110,7 @@ public class OrderDetailsController : BaseApiController
         if (existing is null)
             return NotFound(new { Message = "Order detail not found." });
 
-        // Actualizar mediante reflexión si los setters son privados
+        
         existing.GetType().GetProperty("ServiceOrderId")?.SetValue(existing, dto.ServiceOrderId);
         existing.GetType().GetProperty("SparePartId")?.SetValue(existing, dto.SparePartId);
         existing.GetType().GetProperty("Quantity")?.SetValue(existing, dto.Quantity);
@@ -130,7 +130,7 @@ public class OrderDetailsController : BaseApiController
         return Ok(updated);
     }
 
-    // ✅ DELETE: api/orderdetails/{id}
+    
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct = default)
     {

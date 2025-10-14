@@ -23,9 +23,7 @@ public class VehiclesController : BaseApiController
         _vehicleRepository = vehicleRepository;
     }
 
-    // ============================================================
-    // GET: api/vehicles/all
-    // ============================================================
+    
     [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<VehicleDto>>> GetAll(CancellationToken ct)
     {
@@ -45,9 +43,7 @@ public class VehiclesController : BaseApiController
         return Ok(result);
     }
 
-    // ============================================================
-    // GET: api/vehicles/{id}
-    // ============================================================
+    
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<VehicleDto>> GetById(Guid id, CancellationToken ct)
     {
@@ -70,9 +66,7 @@ public class VehiclesController : BaseApiController
         return Ok(result);
     }
 
-    // ============================================================
-    // POST: api/vehicles
-    // ============================================================
+    
     [HttpPost]
     public async Task<ActionResult<Guid>> Create([FromBody] CreateVehicleDto dto, CancellationToken ct)
     {
@@ -85,9 +79,7 @@ public class VehiclesController : BaseApiController
         return CreatedAtAction(nameof(GetById), new { id }, id);
     }
 
-    // ============================================================
-    // PUT: api/vehicles/{id}
-    // ============================================================
+    
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateVehicleDto dto, CancellationToken ct)
     {
@@ -95,7 +87,7 @@ public class VehiclesController : BaseApiController
         if (vehicle is null)
             return NotFound();
 
-        // Actualizamos los campos
+        
         typeof(Vehicle).GetProperty("Brand")?.SetValue(vehicle, dto.Brand ?? vehicle.Brand);
         typeof(Vehicle).GetProperty("Model")?.SetValue(vehicle, dto.Model ?? vehicle.Model);
         typeof(Vehicle).GetProperty("Vin")?.SetValue(vehicle, dto.Vin ?? vehicle.Vin);
@@ -106,9 +98,7 @@ public class VehiclesController : BaseApiController
         return NoContent();
     }
 
-    // ============================================================
-    // DELETE: api/vehicles/{id}
-    // ============================================================
+    
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {

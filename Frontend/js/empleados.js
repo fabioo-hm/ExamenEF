@@ -5,7 +5,7 @@ const btnAgregarEmpleado = document.getElementById("btnAgregarEmpleado");
 const btnEditarEmpleado = document.getElementById("btnEditarEmpleado");
 const btnEliminarEmpleado = document.getElementById("btnEliminarEmpleado");
 
-// Modales y formularios
+
 const modalCrear = document.getElementById("modalCrearEmpleado");
 const modalEditar = document.getElementById("modalEditarEmpleado");
 const modalEliminar = document.getElementById("modalEliminarEmpleado");
@@ -14,7 +14,7 @@ const formCrear = document.getElementById("formCrearEmpleado");
 const formEditar = document.getElementById("formEditarEmpleado");
 const formEliminar = document.getElementById("formEliminarEmpleado");
 
-// === Funciones para abrir/cerrar modales ===
+
 function abrirModal(modal) {
   modal.style.display = "block";
 }
@@ -22,7 +22,7 @@ function cerrarModal(modal) {
   modal.style.display = "none";
 }
 
-// === EVENTOS DE BOTONES ===
+
 btnAgregarEmpleado.addEventListener("click", () => abrirModal(modalCrear));
 btnEditarEmpleado.addEventListener("click", () => abrirModal(modalEditar));
 btnEliminarEmpleado.addEventListener("click", () => abrirModal(modalEliminar));
@@ -31,7 +31,7 @@ document.getElementById("empleadoCerrarCrear").addEventListener("click", () => c
 document.getElementById("empleadoCerrarEditar").addEventListener("click", () => cerrarModal(modalEditar));
 document.getElementById("empleadoCerrarEliminar").addEventListener("click", () => cerrarModal(modalEliminar));
 
-// === 1️⃣ Cargar todos los empleados ===
+
 async function cargarEmpleados() {
   try {
     const res = await fetch(`${API_URL}/auth/users`);
@@ -56,7 +56,7 @@ async function cargarEmpleados() {
   }
 }
 
-// === 2️⃣ Crear empleado - CON VALIDACIÓN MEJORADA ===
+
 formCrear.addEventListener("submit", async e => {
   e.preventDefault();
 
@@ -65,7 +65,7 @@ formCrear.addEventListener("submit", async e => {
   const password = document.getElementById("empleadoCrearPassword").value.trim();
   const role = document.getElementById("empleadoCrearRol").value.trim();
 
-  // Validaciones frontend
+  
   if (!username) {
     alert("❌ El campo Usuario es requerido");
     return;
@@ -81,7 +81,7 @@ formCrear.addEventListener("submit", async e => {
     return;
   }
 
-  // Validación básica de formato de email
+  
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     alert("❌ Por favor ingresa un email válido");
@@ -92,7 +92,7 @@ formCrear.addEventListener("submit", async e => {
     username: username,
     email: email,
     password: password,
-    role: role || "User" // Valor por defecto si está vacío
+    role: role || "User" 
   };
 
   console.log("📤 Enviando datos:", dto);
@@ -181,7 +181,7 @@ formEditar.addEventListener("submit", async e => {
   }
 });
 
-// === 4️⃣ Eliminar empleado - CORREGIDO ===
+
 formEliminar.addEventListener("submit", async e => {
   e.preventDefault();
 
@@ -211,5 +211,5 @@ formEliminar.addEventListener("submit", async e => {
   }
 });
 
-// === Cargar al inicio ===
+
 document.addEventListener("DOMContentLoaded", cargarEmpleados);
