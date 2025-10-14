@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Domain.Entities.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -15,7 +11,8 @@ public sealed class UserMemberConfiguration : IEntityTypeConfiguration<UserMembe
         builder.ToTable("user_members");
 
         builder.HasKey(u => u.Id);
-        builder.Property(di => di.Id)
+
+        builder.Property(u => u.Id)
                .ValueGeneratedOnAdd()
                .IsRequired()
                .HasColumnName("id");
@@ -46,5 +43,10 @@ public sealed class UserMemberConfiguration : IEntityTypeConfiguration<UserMembe
             .WithOne(ur => ur.UserMembers)
             .HasForeignKey(ur => ur.UserMemberId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(u => u.Auditorias)
+            .WithOne(a => a.UserMember)
+            .HasForeignKey(a => a.UserMemberId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

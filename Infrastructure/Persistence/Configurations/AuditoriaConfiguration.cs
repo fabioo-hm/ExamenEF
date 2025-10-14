@@ -3,17 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.Configurations;
+
 public class AuditoriaConfiguration : IEntityTypeConfiguration<Auditoria>
 {
     public void Configure(EntityTypeBuilder<Auditoria> builder)
     {
-        // Nombre de la tabla
-        builder.ToTable("Auditorias");
+        builder.ToTable("auditorias");
 
-        // Clave primaria
         builder.HasKey(a => a.Id);
 
-        // Propiedades
         builder.Property(a => a.EntidadAfectada)
             .IsRequired()
             .HasMaxLength(100);
@@ -32,13 +30,11 @@ public class AuditoriaConfiguration : IEntityTypeConfiguration<Auditoria>
         builder.Property(a => a.RegistroAfectadoId)
             .IsRequired();
 
-        // Relación con UserMember
         builder.HasOne(a => a.UserMember)
-            .WithMany() // Si UserMember no tiene lista de auditorías
+            .WithMany(u => u.Auditorias)
             .HasForeignKey(a => a.UserMemberId)
-            .OnDelete(DeleteBehavior.Restrict); // Evita borrado en cascada
+            .OnDelete(DeleteBehavior.Restrict);
 
-        // Índices
         builder.HasIndex(a => a.FechaHora);
         builder.HasIndex(a => a.EntidadAfectada);
     }

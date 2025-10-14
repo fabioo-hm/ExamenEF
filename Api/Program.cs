@@ -1,13 +1,14 @@
 using Api.Extensions;
 using Api.Helpers;
 using Api.Helpers.Errors;
+using Api.Middlewares;
 using Api.Services;
 using Application.Abstractions;
 using Domain.Entities;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models; // 👈 Necesario para Swagger
+using Microsoft.OpenApi.Models; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,6 +99,7 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<AuditMiddleware>();
 await app.SeedRolesAsync();
 
 // ============================================================
@@ -121,8 +123,8 @@ app.UseCors("Dinamica");
 app.UseHttpsRedirection();
 app.UseRateLimiter();
 
-app.UseAuthentication(); // 👈 Importante: primero autenticación
-app.UseAuthorization();  // 👈 Luego autorización
+app.UseAuthentication();
+app.UseAuthorization();  
 
 app.MapControllers();
 

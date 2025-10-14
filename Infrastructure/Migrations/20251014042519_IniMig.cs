@@ -94,7 +94,7 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Auditorias",
+                name: "auditorias",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -107,9 +107,9 @@ namespace Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Auditorias", x => x.Id);
+                    table.PrimaryKey("PK_auditorias", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Auditorias_user_members_UserMemberId",
+                        name: "FK_auditorias_user_members_UserMemberId",
                         column: x => x.UserMemberId,
                         principalTable: "user_members",
                         principalColumn: "id",
@@ -266,18 +266,18 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Auditorias_EntidadAfectada",
-                table: "Auditorias",
+                name: "IX_auditorias_EntidadAfectada",
+                table: "auditorias",
                 column: "EntidadAfectada");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Auditorias_FechaHora",
-                table: "Auditorias",
+                name: "IX_auditorias_FechaHora",
+                table: "auditorias",
                 column: "FechaHora");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Auditorias_UserMemberId",
-                table: "Auditorias",
+                name: "IX_auditorias_UserMemberId",
+                table: "auditorias",
                 column: "UserMemberId");
 
             migrationBuilder.CreateIndex(
@@ -359,7 +359,7 @@ namespace Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Auditorias");
+                name: "auditorias");
 
             migrationBuilder.DropTable(
                 name: "invoices");

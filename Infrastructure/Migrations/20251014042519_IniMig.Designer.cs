@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AutoTallerDbContext))]
-    [Migration("20251014032148_IniMig")]
+    [Migration("20251014042519_IniMig")]
     partial class IniMig
     {
         /// <inheritdoc />
@@ -63,7 +63,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("UserMemberId");
 
-                    b.ToTable("Auditorias", (string)null);
+                    b.ToTable("auditorias", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Auth.RefreshToken", b =>
@@ -373,7 +373,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Auditoria", b =>
                 {
                     b.HasOne("Domain.Entities.Auth.UserMember", "UserMember")
-                        .WithMany()
+                        .WithMany("Auditorias")
                         .HasForeignKey("UserMemberId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -493,6 +493,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Auth.UserMember", b =>
                 {
+                    b.Navigation("Auditorias");
+
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("ServiceOrders");

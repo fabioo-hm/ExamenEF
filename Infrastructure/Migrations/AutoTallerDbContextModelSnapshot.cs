@@ -60,7 +60,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("UserMemberId");
 
-                    b.ToTable("Auditorias", (string)null);
+                    b.ToTable("auditorias", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Auth.RefreshToken", b =>
@@ -370,7 +370,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Auditoria", b =>
                 {
                     b.HasOne("Domain.Entities.Auth.UserMember", "UserMember")
-                        .WithMany()
+                        .WithMany("Auditorias")
                         .HasForeignKey("UserMemberId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -490,6 +490,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Auth.UserMember", b =>
                 {
+                    b.Navigation("Auditorias");
+
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("ServiceOrders");
