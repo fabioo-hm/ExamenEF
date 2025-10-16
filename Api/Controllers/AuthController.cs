@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
-[Authorize(Policy = "AdminOnly")]
 public class AuthController : BaseApiController
 {
     private readonly UserService _userService;

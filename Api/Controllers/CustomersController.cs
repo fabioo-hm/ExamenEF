@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Authorize(Policy = "RecepcionistaOnly")]
 [ApiController]
 [Route("api/[controller]")]
 public class CustomersController : BaseApiController

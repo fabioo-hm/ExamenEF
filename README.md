@@ -1,5 +1,55 @@
 # AutoTallerManager - Sistema de Gestión para Talleres Automotrices 🚗⚙
 
+## Examen
+ Implemente CerrarOrdenServicio y GenerarFactura: calcular mano de obra + repuestos, generar Factura enlazada a la orden, y consumir reservas. Proteja POST /api/facturas y POST /api/ordenesservicio/{id}/cerrar con roles: Mecánico puede cerrar; Admin puede consultar todo; Recepcionista no factura. Documente en Swagger con esquema Bearer JWT.
+
+Alcance funcional
+CerrarOrdenServicio
+Endpoint: POST /api/ordenesservicio/{id}/cerrar
+Cambia el estado de la orden a “completada”.
+Consume definitivamente las reservas de repuestos asociadas (descuenta stock).
+Registra tiempos finales (p. ej., fechaCierre) y el usuario que ejecuta la acción.
+GenerarFactura
+Endpoint: POST /api/facturas
+Crea una Factura enlazada a la orden, con desglose de ítems (repuestos) y mano de obra.
+Calcula subtotal, impuestos (si aplica) y total.
+La orden debe estar completada para facturar (evitar facturar órdenes abiertas).
+Persistir el enlace factura ↔ orden (p. ej., ordenId en factura).
+Seguridad y roles (JWT)
+Mecánico: puede cerrar orden.
+Admin: puede consultar todo (y facturar si así se define).
+Recepcionista: no puede facturar; puede consultar lo que su rol permita.
+Responder con 401 (no autenticado) y 403 (autenticado sin permiso) cuando corresponda.
+
+
+Reglas de negocio clave
+Consumo de reservas: al cerrar la orden, toda reserva pendiente debe convertirse en consumo (descuento final de stock); no deben quedar reservas activas para esa orden.
+Idempotencia: evitar cierres duplicados o facturas duplicadas para la misma orden (si se reintenta, devolver estado actual o 409 Conflict con mensaje claro).
+Precondiciones para facturar:
+Orden en estado “completada”.
+Totales calculados a partir de ítems consumidos + mano de obra.
+Validaciones mínimas: existencia de la orden, estado válido para cerrar, que exista al menos un ítem o mano de obra (si la política lo exige), y que el usuario tenga el rol adecuado.
+
+
+Requerimientos de entrega
+
+
+1. La solucion del examen debe estar publicada en el repositorio original del proyecto entregado en la iteración de proyecto.
+
+2. Se debe crear una rama adicional en el proyecto donde se debe encontrar la solucion planteada. La rama debe llamarse slnExamen.
+
+3. No se permitiran entregas posteriores a la fecha estipulada.
+
+4. Los commits deben cumplir con el standard conventional commit.
+
+5. La rama de la solucion debe tener documento README donde se evidence proceso y requerimientos
+
+de ejecucion de la solución.
+
+6. El documento README debe contener las pruebas realizadas de la solución. Las pruebas deben tener datos reales de acuerdo a la base de datos.
+
+
+
 ## Descripción
 AutoTallerManager es un backend RESTful desarrollado en ASP.NET Core que implementa una solución integral para la gestión de talleres automotrices. La aplicación permite centralizar y automatizar procesos clave como la gestión de clientes, vehículos, órdenes de servicio, repuestos y facturación, garantizando la trazabilidad de cada actividad y optimizando el flujo de trabajo de mecánicos, recepcionistas y administradores.
 
@@ -378,6 +428,3 @@ dotnet ef database update -p Infrastructure/ -s Api/
 
 ## Autores
 - **Fabio Hernández** - [fabioo-hm](https://github.com/fabioo-hm)
-- **David Castillo** -  [davidsc21](https://github.com/davidsc21)
-- **Sebastian Mora** -  [sebastian221-art](https://github.com/sebastian221-art)
-- **Dylan** - [Dylan3-cpu](https://github.com/Dylan3-cpu)

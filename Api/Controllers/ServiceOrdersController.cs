@@ -8,13 +8,13 @@ using Application.Abstractions;
 using Application.DTOs.ServiceOrders;
 using Application.ServiceOrders;
 using Domain.Entities;
+using Domain.Entities.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Authorize(Roles = "Administrador,Mecanico")]
 [ApiController]  
 [Route("api/[controller]")]  
 public class ServiceOrdersController : BaseApiController
@@ -171,15 +171,16 @@ public class ServiceOrdersController : BaseApiController
         return NoContent();
     }
 
-    [HttpPatch("{id:guid}/status")]
-    public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateServiceOrderStatusDto dto, CancellationToken ct)
+    [Authorize(Policy = "MecanicoOnly")]
+    [HttpPost("{id:guid}/complete")]
+    public async Task<IActionResult> CompleteOrder(Guid id, CancellationToken ct)
     {
         var existing = await _repo.GetByIdAsync(id, ct);
         if (existing is null)
             return NotFound();
 
 
-        existing.UpdateStatus(dto.OrderStatus);
+        existing.UpdateStatus((OrderStatus)3);
 
         await _repo.UpdateAsync(existing, ct);
         return NoContent();

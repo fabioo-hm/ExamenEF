@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Authorize(Roles = "Administrador,Mecanico")]
+[Authorize(Roles = "Admin,Mecanico")]
 [ApiController]  
 [Route("api/[controller]")] 
 public class InvoicesController : BaseApiController
