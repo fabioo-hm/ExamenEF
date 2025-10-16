@@ -8,9 +8,13 @@ using Application.Abstractions;
 using Application.SpareParts;
 using Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
+[Authorize]
+[ApiController]
+[Route("api/[controller]")]
 public class SparePartsController : BaseApiController
     {
         private readonly IMediator _mediator;
@@ -21,38 +25,39 @@ public class SparePartsController : BaseApiController
         _mediator = mediator;
         _repo = repo;
     }
-        
-        [HttpGet]
-        public async Task<IActionResult> GetPaged(
-            [FromQuery] int page = 1,
-            [FromQuery] int size = 10,
-            [FromQuery] string? search = null,
-            CancellationToken ct = default)
+
+    [HttpGet]
+    public async Task<IActionResult> GetPaged(
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 10,
+        [FromQuery] string? search = null,
+        CancellationToken ct = default)
+    {
+        var parts = await _repo.GetPagedAsync(page, size, search, ct);
+        var total = await _repo.CountAsync(search, ct);
+
+        Response.Headers.Add("X-Total-Count", total.ToString());
+        Response.Headers.Add("X-Page-Number", page.ToString());
+        Response.Headers.Add("X-Page-Size", size.ToString());
+
+        var result = parts.Select(p => new SparePartDto(
+            p.Id,
+            p.Code ?? string.Empty,
+            p.Description ?? string.Empty,
+            p.StockQuantity,
+            p.UnitPrice
+        ));
+
+        return Ok(new
         {
-            var parts = await _repo.GetPagedAsync(page, size, search, ct);
-            var total = await _repo.CountAsync(search, ct);
-
-            Response.Headers.Add("X-Total-Count", total.ToString());
-            Response.Headers.Add("X-Page-Number", page.ToString());
-            Response.Headers.Add("X-Page-Size", size.ToString());
-
-            var result = parts.Select(p => new SparePartDto(
-                p.Id,
-                p.Code ?? string.Empty,
-                p.Description ?? string.Empty,
-                p.StockQuantity,
-                p.UnitPrice
-            ));
-
-            return Ok(new
-            {
-                Total = total,
-                Page = page,
-                Size = size,
-                Data = result
-            });
-        }
+            Total = total,
+            Page = page,
+            Size = size,
+            Data = result
+        });
+    }
         // ✅ POST: api/spareparts
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         public async Task<ActionResult<Guid>> Create([FromBody] CreateSparePartDto dto, CancellationToken ct)
         {
@@ -121,7 +126,7 @@ public class SparePartsController : BaseApiController
             return Ok(dto);
         }
 
-        
+        [Authorize(Policy = "AdminOnly")]
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateSparePartDto dto, CancellationToken ct)
         {
@@ -143,7 +148,7 @@ public class SparePartsController : BaseApiController
             return NoContent();
         }
 
-        
+        [Authorize(Policy = "AdminOnly")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
         {

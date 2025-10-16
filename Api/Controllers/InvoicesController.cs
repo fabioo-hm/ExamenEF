@@ -7,11 +7,15 @@ using Api.DTOs.Invoices;
 using Application.Abstractions;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+[Authorize(Roles = "Administrador,Mecanico")]
+[ApiController]  
+[Route("api/[controller]")] 
 public class InvoicesController : BaseApiController
 {
     private readonly IInvoiceRepository _repository;
@@ -19,7 +23,7 @@ public class InvoicesController : BaseApiController
     private readonly IUnitOfWork _unitofwork;
 
 
-    public InvoicesController(IInvoiceRepository repository,IMapper mapper, IUnitOfWork unitofwork)
+    public InvoicesController(IInvoiceRepository repository, IMapper mapper, IUnitOfWork unitofwork)
     {
         _repository = repository;
         _unitofwork = unitofwork;
@@ -57,7 +61,7 @@ public class InvoicesController : BaseApiController
         });
     }
 
-    
+
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct = default)
     {
@@ -84,7 +88,7 @@ public class InvoicesController : BaseApiController
         var dto = _mapper.Map<IEnumerable<InvoiceDto>>(invoice);
         return Ok(dto);
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateInvoiceDto dto, CancellationToken ct = default)
     {
@@ -104,7 +108,7 @@ public class InvoicesController : BaseApiController
         return CreatedAtAction(nameof(GetById), new { id = invoice.Id }, created);
     }
 
-    
+
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateInvoiceDto dto, CancellationToken ct = default)
     {
@@ -112,7 +116,7 @@ public class InvoicesController : BaseApiController
         if (existing is null)
             return NotFound(new { Message = "Invoice not found." });
 
-        
+
         existing.GetType().GetProperty("ServiceOrderId")?.SetValue(existing, dto.ServiceOrderId);
         existing.GetType().GetProperty("LaborCost")?.SetValue(existing, dto.LaborCost);
         existing.GetType().GetProperty("PartsTotal")?.SetValue(existing, dto.PartsTotal);

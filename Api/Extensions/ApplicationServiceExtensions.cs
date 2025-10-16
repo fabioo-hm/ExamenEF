@@ -131,26 +131,14 @@ public static class ApplicationServiceExtensions
         
         services.AddAuthorization(options =>
         {
-            
-            options.AddPolicy("Admins", policy =>
-                policy.RequireRole("Administrator"));
-
-            options.AddPolicy("Others", policy =>
-                policy.RequireRole("Other"));
-
-            options.AddPolicy("Pro", policy =>
-                policy.RequireRole("Professional"));
-
-            
-            options.AddPolicy("Professional", policy =>
-                policy.RequireClaim("Subscription", "Premium"));
-
-            
-            options.AddPolicy("OtherOPremium", policy =>
-                policy.RequireAssertion(context =>
-                    context.User.IsInRole("Other")
-                || context.User.HasClaim(c =>
-                        c.Type == "Subscription" && c.Value == "Premium")));
+            options.AddPolicy("AdminOnly", policy =>
+                policy.RequireRole("Administrador"));
+            options.AddPolicy("MecanicoOnly", policy =>
+                policy.RequireRole("Mecanico"));
+            options.AddPolicy("RecepcionistaOnly", policy =>
+                policy.RequireRole("Recepcionista"));
+            options.AddPolicy("StaffOnly", policy =>
+                policy.RequireRole("Mecanico", "Recepcionista"));
         });
     }
     public static void AddValidationErrors(this IServiceCollection services)

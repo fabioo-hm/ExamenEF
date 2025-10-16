@@ -7,23 +7,27 @@ using Api.DTOs.Customers;
 using Application.Abstractions;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
+[Authorize(Policy = "RecepcionistaOnly")]
+[ApiController]
+[Route("api/[controller]")]
 public class CustomersController : BaseApiController
 {
-    private readonly ICustomerRepository _repository;    
+    private readonly ICustomerRepository _repository;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitofwork;
 
-    public CustomersController(ICustomerRepository repository,IMapper mapper, IUnitOfWork unitofwork)
+    public CustomersController(ICustomerRepository repository, IMapper mapper, IUnitOfWork unitofwork)
     {
         _mapper = mapper;
         _unitofwork = unitofwork;
         _repository = repository;
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> GetAll(
         [FromQuery] int page = 1,
@@ -53,7 +57,7 @@ public class CustomersController : BaseApiController
             Data = result
         });
     }
-    
+
     [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<CustomerDto>>> GetAll(CancellationToken ct)
     {
@@ -62,7 +66,7 @@ public class CustomersController : BaseApiController
         return Ok(dto);
     }
 
-    
+
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct = default)
     {
@@ -74,7 +78,7 @@ public class CustomersController : BaseApiController
         return Ok(dto);
     }
 
-    
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateCustomerDto dto, CancellationToken ct = default)
     {
@@ -88,7 +92,7 @@ public class CustomersController : BaseApiController
         return CreatedAtAction(nameof(GetById), new { id = customer.Id }, created);
     }
 
-    
+
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCustomerDto dto, CancellationToken ct = default)
     {
@@ -96,7 +100,7 @@ public class CustomersController : BaseApiController
         if (existing is null)
             return NotFound(new { Message = "Customer not found." });
 
-        
+
         if (dto.Name is not null)
             existing.GetType().GetProperty("Name")?.SetValue(existing, dto.Name);
         if (dto.Email is not null)
@@ -110,7 +114,7 @@ public class CustomersController : BaseApiController
         return Ok(updated);
     }
 
-    
+
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct = default)
     {

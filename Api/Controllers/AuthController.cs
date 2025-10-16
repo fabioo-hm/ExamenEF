@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Api.DTOs.Auth;
 using Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
-
+[Authorize(Policy = "AdminOnly")]
 public class AuthController : BaseApiController
 {
     private readonly UserService _userService;
@@ -17,7 +18,7 @@ public class AuthController : BaseApiController
         _userService = userService;
     }
 
-    
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
@@ -36,7 +37,7 @@ public class AuthController : BaseApiController
         return Ok(result);
     }
 
-
+    [AllowAnonymous]
     [HttpPost("add-role")]
     public async Task<IActionResult> AddRole([FromBody] AddRoleDto dto)
     {

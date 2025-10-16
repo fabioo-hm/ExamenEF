@@ -9,9 +9,14 @@ using Application.DTOs.ServiceOrders;
 using Application.ServiceOrders;
 using Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
+
+[Authorize(Roles = "Administrador,Mecanico")]
+[ApiController]  
+[Route("api/[controller]")]  
 public class ServiceOrdersController : BaseApiController
 {
     private readonly IMediator _mediator;
@@ -56,18 +61,18 @@ public class ServiceOrdersController : BaseApiController
         });
     }
 
-    
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateServiceOrderDto dto, CancellationToken ct = default)
     {
-        
+
         if (dto.VehicleId == Guid.Empty)
             return BadRequest(new { Message = "El ID del vehículo es obligatorio." });
 
         if (dto.UserMemberId <= 0)
             return BadRequest(new { Message = "El ID del mecánico es obligatorio." });
 
-        
+
         var serviceOrder = new ServiceOrder(
             dto.VehicleId,
             dto.ServiceType,
@@ -79,7 +84,7 @@ public class ServiceOrdersController : BaseApiController
 
         await _repo.AddAsync(serviceOrder, ct);
 
-        
+
         var created = new ServiceOrderDto(
             serviceOrder.Id,
             serviceOrder.VehicleId,
@@ -93,7 +98,7 @@ public class ServiceOrdersController : BaseApiController
         return CreatedAtAction(nameof(GetById), new { id = serviceOrder.Id }, created);
     }
 
-    
+
     [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<ServiceOrderDto>>> GetAll(CancellationToken ct)
     {
@@ -111,7 +116,7 @@ public class ServiceOrdersController : BaseApiController
         return Ok(result);
     }
 
-    
+
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<ServiceOrderDto>> GetById(Guid id, CancellationToken ct)
     {
@@ -132,7 +137,7 @@ public class ServiceOrdersController : BaseApiController
         return Ok(dto);
     }
 
-    
+
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateServiceOrderDto dto, CancellationToken ct)
     {
@@ -140,7 +145,7 @@ public class ServiceOrdersController : BaseApiController
         if (existing is null)
             return NotFound();
 
-        
+
         existing.Update(
             dto.VehicleId,
             dto.ServiceType,
@@ -173,7 +178,7 @@ public class ServiceOrdersController : BaseApiController
         if (existing is null)
             return NotFound();
 
-        
+
         existing.UpdateStatus(dto.OrderStatus);
 
         await _repo.UpdateAsync(existing, ct);
